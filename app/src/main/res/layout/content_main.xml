@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,32 +13,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.jimmy.activitetsgenkendelse.MainActivity"
     tools:showIn="@layout/activity_main">
-    <TableLayout
 
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/tl">
+    <fragment
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:id="@+id/fragment"
+        android:layout_gravity="left|top" />
 
-            <Button
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="Start genkendelse"
-                android:id="@+id/startButton"
-                android:layout_column="7"
-                android:layout_gravity="center_vertical" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stop Genkendelse"
-                android:id="@+id/stopButton"
-                android:layout_column="7" />
-
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/detected_activities_textview"
-                android:text="Detektering af brugerens aktiviteter"/>
-
-    </TableLayout>
-</ScrollView>
+</FrameLayout>
