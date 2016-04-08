@@ -216,11 +216,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
-        mDetectedActivityTextView = (TextView) findViewById(R.id.detected_activities_textview);
-        tableLayout = (TableLayout) findViewById(R.id.tl);
-        startKnap = (Button) findViewById(R.id.startButton);
-        stopKnap = (Button) findViewById(R.id.stopButton);
-        scrollView = (ScrollView) findViewById(R.id.sv);
+        //mDetectedActivityTextView = (TextView) findViewById(R.id.detected_activities_textview);
+        //tableLayout = (TableLayout) findViewById(R.id.tl);
+        //startKnap = (Button) findViewById(R.id.startButton);
+        //stopKnap = (Button) findViewById(R.id.stopButton);
+        //scrollView = (ScrollView) findViewById(R.id.sv);
 
         startKnap.setOnClickListener(this);
         stopKnap.setOnClickListener(this);

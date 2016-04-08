@@ -1,48 +1,60 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="layout.Map">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    tools:context="layout.Map"
+    android:orientation="vertical"
+    android:weightSum="1">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <RelativeLayout
+    <FrameLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:foregroundGravity="top"
-        android:orientation="vertical"
-        android:minWidth="">
-    </RelativeLayout>
+        android:layout_weight="0.95">
+    </FrameLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:weightSum="2">
+        android:orientation="vertical">
 
         <TextView
             android:layout_width="fill_parent"
-            android:layout_height="50dp"
-            android:text="New Text"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:text="Music playing:"
             android:id="@+id/musicTextView"
-            android:layout_weight="1"/>
+            android:layout_gravity="center"/>
 
-        <Button
-            android:layout_width="285dp"
-            android:layout_height="wrap_content"
-            android:text="Add pothole"
-            android:id="@+id/addPotholeButton"
-            android:layout_weight="0.8"/>
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/settingsButton"
-            android:layout_weight="0.2"
-            android:layout_gravity="right" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add pothole"
+                android:textSize="18dp"
+                android:gravity="left"
+                android:id="@+id/addPotholeButton"
+                android:layout_weight="0.98" />
 
-    </RelativeLayout>
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/settingsButton"
+                android:layout_weight="0.01"
+                android:foreground="@drawable/ic_setting_dark"/>
+        </LinearLayout>
 
-</RelativeLayout>
+    </LinearLayout>
+
+
+
+</LinearLayout>
