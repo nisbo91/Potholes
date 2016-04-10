@@ -10,14 +10,14 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="18dp"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:text="IMEI: Unkwown" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="18dp"
         android:text="Car model: Unkwown"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:id="@+id/textView" />
@@ -25,7 +25,7 @@
     <Switch
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="18dp"
         android:text="Pothole Alert:"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:id="@+id/switch1" />
@@ -41,26 +41,28 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20dp"
+            android:textSize="18dp"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
             android:text="Alert radius:"
-            android:id="@+id/textView2" />
+            android:id="@+id/textView2"
+            android:layout_weight="3"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
-            android:textSize="20dp"
-            android:text="Unkwown"
+            android:textSize="18dp"
+            android:text="Unkwown Km"
             android:id="@+id/textView3" />
 
-        <SeekBar
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:scrollbarSize="20dp"
-            android:layout_gravity="center"
-             android:id="@+id/seekBar" />
+
 
     </LinearLayout>
+    <SeekBar
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scrollbarSize="18dp"
+        android:layout_gravity="center"
+        android:id="@+id/seekBar" />
 
 </LinearLayout>
