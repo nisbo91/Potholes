@@ -4,48 +4,25 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.ActivityRecognition;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>, SensorEventListener {
+public class MainActivity extends AppCompatActivity{ //implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>, SensorEventListener {
 
     private GoogleApiClient mGoogleApiClient;
     public static Handler forgrundstråd = new Handler();
@@ -77,141 +54,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int counter;
     volatile boolean stopWorker;
 
-    private void findBluetooth() {
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-                if (device.getName().equals("OBDLink MX")) {
-                    mDevice = device;
-                    break;
-                }
-            }
-        }
-        System.out.println("Bluetooth Device Found");
-    }
-
-    /***
-     * open bluetooth, connect to socket and send setup data
-     * @throws IOException
-     */
-    private void openBluetooth() throws IOException {
-        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
-        mSocket = mDevice.createRfcommSocketToServiceRecord(uuid);
-        mSocket.connect();
-        mOutputStream = mSocket.getOutputStream();
-        mInputStream = mSocket.getInputStream();
-
-        // prepare to read setup file
-        final Scanner s = new Scanner(getResources().openRawResource(R.raw.canbussetup)).useDelimiter("\r");
-        String word;
-        // send line-by-line
-        try {
-            while (s.hasNext()) {
-                word = s.next();
-                sendData(word);
-                SystemClock.sleep(200);
-            }
-        } finally {
-            System.out.println("finally.....");
-            s.close();
-        }
-
-        beginListenForData();
-        System.out.println("Bluetooth Opened");
-    }
-
-    /***
-     * handle incomming strings
-     * @param data String to be sent
-     */
-    private void handleData(String data){
-        if(!(data.equals("\r")||data.equals("?")||data.isEmpty())) {
-            // TODO: 08-04-2016 detect/select pid
-
-            // TODO: 08-04-2016 stuff
-            counter++;
-            System.out.println(counter);
-        }
-    }
-
-    /***
-     * listen to the inputsocket
-     */
-    private void beginListenForData() {
-        final Handler handler = new Handler();
-        final byte delimiter = 13;              //This is the ASCII code for carriage return
-
-        stopWorker = false;
-        readBufferPosition = 0;
-        readBuffer = new byte[1024];
-        workerThread = new Thread(new Runnable() {
-            public void run() {
-                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
-                    try {
-                        int bytesAvailable = mInputStream.available();
-                        if (bytesAvailable > 0) {
-                            byte[] packetBytes = new byte[bytesAvailable];
-                            mInputStream.read(packetBytes);
-                            for (int i = 0; i < bytesAvailable; i++) {
-                                byte b = packetBytes[i];
-                                if (b == delimiter) {
-                                    byte[] encodedBytes = new byte[readBufferPosition];
-                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
-                                    final String data = new String(encodedBytes, "US-ASCII");
-                                    readBufferPosition = 0;
-                                    // handle incomming data
-                                    handler.post(new Runnable() {
-                                        public void run() {
-                                            //"412 74 0F 00 36 7A 92 00 10"; // hastighed og odometer
-                                            //"210 00 00 4F 41 00 00 00 00"; // throttle
-                                            //"236 00";                      // steering wheel
-                                            handleData(data);
-                                        }
-                                    });
-                                } else {
-                                    readBuffer[readBufferPosition++] = b;
-                                }
-                            }
-                        }
-                    } catch (IOException ex) {
-                        stopWorker = true;
-                    }
-                }
-            }
-        });
-
-        workerThread.start();
-    }
-
-    /***
-     * send data-string
-     * @param string String to be sent
-     * @throws IOException
-     */
-    private void sendData(String string) throws IOException{
-        String msg = string + "\r";
-        mOutputStream.write(msg.getBytes());
-    }
-
-    /***
-     * close bluetooth connection
-     * @throws IOException
-     */
-    private void closeBluetooth() throws IOException {
-        stopWorker = true;
-        mOutputStream.close();
-        mInputStream.close();
-        mSocket.close();
-        System.out.println("Socket Closed!");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        if (savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction().add(R.id.Startfragment, new MapFragment()).commit();
+        }
+
         instans = this;
+        /*
         i = 0;
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
@@ -280,7 +135,137 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     e.printStackTrace();
                 }
             }
+        }*/
+    }
+
+
+
+    /*private void findBluetooth() {
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                if (device.getName().equals("OBDLink MX")) {
+                    mDevice = device;
+                    break;
+                }
+            }
         }
+        System.out.println("Bluetooth Device Found");
+    }
+
+    /***
+     * open bluetooth, connect to socket and send setup data
+     * @throws IOException
+     */
+    /*private void openBluetooth() throws IOException {
+        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
+        mSocket = mDevice.createRfcommSocketToServiceRecord(uuid);
+        mSocket.connect();
+        mOutputStream = mSocket.getOutputStream();
+        mInputStream = mSocket.getInputStream();
+
+        // prepare to read setup file
+        final Scanner s = new Scanner(getResources().openRawResource(R.raw.canbussetup)).useDelimiter("\r");
+        String word;
+        // send line-by-line
+        try {
+            while (s.hasNext()) {
+                word = s.next();
+                sendData(word);
+                SystemClock.sleep(200);
+            }
+        } finally {
+            System.out.println("finally.....");
+            s.close();
+        }
+
+        beginListenForData();
+        System.out.println("Bluetooth Opened");
+    }
+
+    /***
+     * handle incomming strings
+     * @param data String to be sent
+     */
+    /*private void handleData(String data){
+        if(!(data.equals("\r")||data.equals("?")||data.isEmpty())) {
+            // TODO: 08-04-2016 detect/select pid
+
+            // TODO: 08-04-2016 stuff
+            counter++;
+            System.out.println(counter);
+        }
+    }
+
+    /***
+     * listen to the inputsocket
+     */
+    /*private void beginListenForData() {
+        final Handler handler = new Handler();
+        final byte delimiter = 13;              //This is the ASCII code for carriage return
+
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+        workerThread = new Thread(new Runnable() {
+            public void run() {
+                while (!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
+                        int bytesAvailable = mInputStream.available();
+                        if (bytesAvailable > 0) {
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            mInputStream.read(packetBytes);
+                            for (int i = 0; i < bytesAvailable; i++) {
+                                byte b = packetBytes[i];
+                                if (b == delimiter) {
+                                    byte[] encodedBytes = new byte[readBufferPosition];
+                                    System.arraycopy(readBuffer, 0, encodedBytes, 0, encodedBytes.length);
+                                    final String data = new String(encodedBytes, "US-ASCII");
+                                    readBufferPosition = 0;
+                                    // handle incomming data
+                                    handler.post(new Runnable() {
+                                        public void run() {
+                                            //"412 74 0F 00 36 7A 92 00 10"; // hastighed og odometer
+                                            //"210 00 00 4F 41 00 00 00 00"; // throttle
+                                            //"236 00";                      // steering wheel
+                                            handleData(data);
+                                        }
+                                    });
+                                } else {
+                                    readBuffer[readBufferPosition++] = b;
+                                }
+                            }
+                        }
+                    } catch (IOException ex) {
+                        stopWorker = true;
+                    }
+                }
+            }
+        });
+
+        workerThread.start();
+    }
+
+    /***
+     * send data-string
+     * @param string String to be sent
+     * @throws IOException
+     */
+    /*private void sendData(String string) throws IOException{
+        String msg = string + "\r";
+        mOutputStream.write(msg.getBytes());
+    }
+
+    /***
+     * close bluetooth connection
+     * @throws IOException
+     */
+    /*private void closeBluetooth() throws IOException {
+        stopWorker = true;
+        mOutputStream.close();
+        mInputStream.close();
+        mSocket.close();
+        System.out.println("Socket Closed!");
     }
 
     @Override
@@ -370,11 +355,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }*/
         //generateNoteOnSD(getApplicationContext(), filename, data);
         //File file = new File (path + "/File.txt");
-        Toast.makeText(getApplicationContext(), "Saved ,"+data.size()+", "+filename, Toast.LENGTH_LONG).show();
-        System.out.println(filename);
+        //Toast.makeText(getApplicationContext(), "Saved ,"+data.size()+", "+filename, Toast.LENGTH_LONG).show();
+        //System.out.println(filename);
         //Save(file,data);
-        mSensorManager.unregisterListener(this);
-    }
+        //mSensorManager.unregisterListener(this);
+    //}
 
     /*private void Save(File file, ArrayList<String> data) {
         FileOutputStream fos = null;
@@ -409,7 +394,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             catch (IOException e) {e.printStackTrace();}
         }
-    }*/
+    }
 
     @Override
     protected void onResume() {

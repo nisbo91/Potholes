@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Activitetsgenkendelse</string>
+    <string name="app_name">Pothole App</string>
     <string name="action_settings">Settings</string>
     <string name="in_vehicle">In a vehicle</string>
     <string name="on_bicycle">On a bicycle</string>
