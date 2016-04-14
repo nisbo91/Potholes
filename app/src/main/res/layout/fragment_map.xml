@@ -18,7 +18,8 @@
         <com.google.android.gms.maps.MapView
             android:id="@+id/mapview"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent"
+            android:apiKey="@string/google_maps_key"/>
 
     </FrameLayout>
 

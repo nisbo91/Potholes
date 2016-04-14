@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -20,16 +21,16 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 
 /**
  * Created by Jimmy on 10-04-2016.
  */
 
 
-public class MapFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, android.location.LocationListener {
+public class MapFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback {
 
     static MapFragment synligInstans;
     private Button addPotholeButton;
@@ -38,7 +39,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     MapView mapView;
     private GoogleMap mGoogleMap;
     private LocationManager locationManager;
-    private Marker myLocationMarker;
     private String locationProvider;
 
     @Override
@@ -57,7 +57,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
         settingsButton.setOnClickListener(this);
         addPotholeButton.setOnClickListener(this);
-
         return v;
     }
 
@@ -83,7 +82,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setAllGesturesEnabled(true);
 
-        this.locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        // Acquire a reference to the system Location Manager
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         //define the location manager criteria
         Criteria criteria = new Criteria();
 
@@ -99,11 +99,73 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             return;
         }
         Location location = locationManager.getLastKnownLocation(locationProvider);
+
         //initialize the location
         if (location != null) {
 
-            onLocationChanged(location);
+            // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
+            MapsInitializer.initialize(getActivity());
+
+            //when the location changes, update the map by zooming to the location
+            CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+            mGoogleMap.moveCamera(center);
+
+            CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
+            mGoogleMap.animateCamera(zoom);
         }
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+
+            @Override
+            public void onLocationChanged(Location location) {
+                Log.i("called", "onLocationChanged");
+                //define the location manager criteria
+                Criteria criteria = new Criteria();
+
+                locationProvider = locationManager.getBestProvider(criteria, false);
+
+                if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                location = locationManager.getLastKnownLocation(locationProvider);
+
+                // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
+                MapsInitializer.initialize(getActivity());
+
+                //when the location changes, update the map by zooming to the location
+                CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+                mGoogleMap.moveCamera(center);
+
+                CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
+                mGoogleMap.animateCamera(zoom);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
 
     @Override
@@ -136,32 +198,5 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        Log.i("called", "onLocationChanged");
-
-        //when the location changes, update the map by zooming to the location
-        CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(),location.getLongitude()));
-        this.mGoogleMap.moveCamera(center);
-
-        CameraUpdate zoom=CameraUpdateFactory.zoomTo(14);
-        this.mGoogleMap.animateCamera(zoom);
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 }

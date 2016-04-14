@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity{ //implements View.OnClickLi
         }
 
         instans = this;
+
         /*
         i = 0;
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -137,7 +138,6 @@ public class MainActivity extends AppCompatActivity{ //implements View.OnClickLi
             }
         }*/
     }
-
 
 
     /*private void findBluetooth() {
