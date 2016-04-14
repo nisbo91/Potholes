@@ -17,7 +17,7 @@
         android:layout_width="50dp"
         android:layout_height="25dp"
         android:text="NET"
-        android:id="@+id/textView4"
+        android:id="@+id/netTextview"
         android:gravity="center"
         android:background="@color/red"
         android:layout_gravity="right|top"
@@ -32,7 +32,7 @@
         android:layout_width="50dp"
         android:layout_height="25dp"
         android:text="GPS"
-        android:id="@+id/textView5"
+        android:id="@+id/gpsTextview"
         android:gravity="center"
         android:background="@color/red"
         android:layout_alignParentBottom="true"
@@ -83,13 +83,13 @@
                 android:id="@+id/addPotholeButton"
                 android:layout_weight="0.98" />
 
-            <Button
+            <ImageButton
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/settingsButton"
-                android:layout_weight="0.01"
-                android:foreground="@drawable/ic_setting_dark"/>
+                android:layout_weight="0.02"
+                android:src="@drawable/ic_setting_dark" />
         </LinearLayout>
 
     </LinearLayout>

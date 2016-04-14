@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdate;
@@ -25,6 +28,12 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+
+import static com.example.jimmy.activitetsgenkendelse.R.color.green;
+import static com.example.jimmy.activitetsgenkendelse.R.color.red;
+import static com.example.jimmy.activitetsgenkendelse.R.color.yellow;
+
 /**
  * Created by Jimmy on 10-04-2016.
  */
@@ -34,12 +43,19 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
     static MapFragment synligInstans;
     private Button addPotholeButton;
-    private Button settingsButton;
+    private ImageButton settingsButton;
     private GoogleApiClient mGoogleApiClient;
     MapView mapView;
     private GoogleMap mGoogleMap;
     private LocationManager locationManager;
     private String locationProvider;
+    public static final int OUT_OF_SERVICE = 0;
+    public static final int TEMPORARILY_UNAVAILABLE = 1;
+    public static final int AVAILABLE = 2;
+    private List<String> providers; //[passive, gps, network]
+    private TextView netTextView;
+    private TextView gpsTextView;
+    private GpsStatus gpsStatus;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -49,7 +65,9 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         View v = inflater.inflate(R.layout.fragment_map, container, false);
 
         addPotholeButton = (Button) v.findViewById(R.id.addPotholeButton);
-        settingsButton = (Button) v.findViewById(R.id.settingsButton);
+        settingsButton = (ImageButton) v.findViewById(R.id.settingsButton);
+        netTextView = (TextView) v.findViewById(R.id.netTextview);
+        gpsTextView = (TextView) v.findViewById(R.id.gpsTextview);
 
         mapView = (MapView) v.findViewById(R.id.mapview);
         mapView.onCreate(savedInstanceState);
@@ -85,10 +103,13 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
         // Acquire a reference to the system Location Manager
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        providers = locationManager.getAllProviders();
         //define the location manager criteria
         Criteria criteria = new Criteria();
 
         locationProvider = locationManager.getBestProvider(criteria, false);
+        gpsStatus = locationManager.getGpsStatus(null);
+        System.out.println(""+gpsStatus);
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -113,6 +134,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
             mGoogleMap.animateCamera(zoom);
+
         }
 
         // Define a listener that responds to location updates
@@ -144,7 +166,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 location = locationManager.getLastKnownLocation(locationProvider);
 
                 // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
-                MapsInitializer.initialize(getActivity());
+                //MapsInitializer.initialize(getActivity());
 
                 //when the location changes, update the map by zooming to the location
                 CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -156,7 +178,34 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
+                if (provider == providers.get(0)){
 
+                }
+                if (provider == providers.get(1)){
+                    if (status==OUT_OF_SERVICE){
+                        gpsTextView.setBackgroundResource(red);
+                    }
+                    if (status==TEMPORARILY_UNAVAILABLE){
+                        gpsTextView.setBackgroundResource(yellow);
+                    }
+                    if (status==AVAILABLE){
+                        gpsTextView.setBackgroundResource(green);
+                    }
+                }
+                if(provider == providers.get(2)){
+                    if (status==OUT_OF_SERVICE){
+                        netTextView.setBackgroundResource(red);
+                    }
+                    if (status==TEMPORARILY_UNAVAILABLE){
+                        gpsTextView.setBackgroundResource(yellow);
+                    }
+                    if (status==AVAILABLE){
+                        netTextView.setBackgroundResource(green);
+                    }
+                }
+                else{
+
+                }
             }
 
             @Override
