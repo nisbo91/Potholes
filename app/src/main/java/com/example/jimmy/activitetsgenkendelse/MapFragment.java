@@ -57,6 +57,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
         settingsButton.setOnClickListener(this);
         addPotholeButton.setOnClickListener(this);
+
         return v;
     }
 
@@ -124,8 +125,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 Criteria criteria = new Criteria();
 
                 locationProvider = locationManager.getBestProvider(criteria, false);
-
-                if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                try{
+                    if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -134,7 +135,12 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                     // to handle the case where the user grants the permission. See the documentation
                     // for ActivityCompat#requestPermissions for more details.
                     return;
+                    }
                 }
+                catch (Exception e){
+                    Log.e("error", String.valueOf(e));
+                }
+
                 location = locationManager.getLastKnownLocation(locationProvider);
 
                 // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
