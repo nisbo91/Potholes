@@ -295,6 +295,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     public void onPause() {
         super.onPause();
         mapView.onPause();
+        accelometer.pauseAccelemeter();
         Log.i("called", "Activity --> onPause");
     }
 
@@ -302,6 +303,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+        Log.i("called", "Activity --> onDestroy");
     }
 
     @Override
@@ -314,5 +316,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     public void onLowMemory() {
         super.onLowMemory();
         mapView.onLowMemory();
+        Log.i("called", "Activity --> onLowMemory");
     }
 }
