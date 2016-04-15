@@ -28,11 +28,13 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.jimmy.activitetsgenkendelse.R.color.green;
 import static com.example.jimmy.activitetsgenkendelse.R.color.red;
 import static com.example.jimmy.activitetsgenkendelse.R.color.yellow;
+import static java.lang.Math.abs;
 
 /**
  * Created by Jimmy on 10-04-2016.
@@ -56,6 +58,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     private TextView netTextView;
     private TextView gpsTextView;
     private GpsStatus gpsStatus;
+    private Accelometer accelometer;
+    private ArrayList<String> dataAccelometer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -76,6 +80,11 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         settingsButton.setOnClickListener(this);
         addPotholeButton.setOnClickListener(this);
 
+        accelometer = new Accelometer();
+        accelometer.AccelometerInit(getContext());
+
+        dataAccelometer = new ArrayList<String>();
+
         return v;
     }
 
@@ -86,6 +95,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         switch (v.getId()) {
             case R.id.addPotholeButton:
 
+                break;
             case R.id.settingsButton:
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.Startfragment, new SettingsFragment()).addToBackStack(null).commit();
@@ -121,7 +131,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             return;
         }
         Location location = locationManager.getLastKnownLocation(locationProvider);
-
+        System.out.println(locationProvider);
+        System.out.println(location);
         //initialize the location
         if (location != null) {
 
@@ -148,7 +159,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
                 locationProvider = locationManager.getBestProvider(criteria, false);
                 try{
-                    if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     // TODO: Consider calling
                     //    ActivityCompat#requestPermissions
                     // here to request the missing permissions, and then overriding
@@ -174,6 +185,55 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
                 mGoogleMap.animateCamera(zoom);
+
+                dataAccelometer = accelometer.returnData();
+                boolean pothole=detectedPothole(dataAccelometer);
+                accelometer.clearData();
+                if(pothole== true){
+
+                }
+                else{
+
+                }
+            }
+
+            public boolean detectedPothole(ArrayList data) {
+                int count = data.size();
+                //System.out.println("detected:  " + data);
+                int i;
+                boolean pothole = false;
+                double yaxis;
+                yaxis = 0;
+
+                for (i = 0; i < count - 1; i++) {
+                    if(yaxis==0){
+                        String alldata = (String) data.get(i);
+                        //System.out.println("alldata:  "+alldata);
+                        String[] split = alldata.split(",");
+                        //System.out.println("split:  "+ Arrays.toString(split));
+                        yaxis = Double.parseDouble(split[1]);
+                        //System.out.println(yaxis);
+                    }
+                    else{
+                        double oldyAxis = yaxis;
+                        String alldata = (String) data.get(i);
+                        //System.out.println("alldata:  "+alldata);
+                        String[] split = alldata.split(",");
+                        //System.out.println("split:  "+ Arrays.toString(split));
+                        yaxis = Double.parseDouble(split[1]);
+                        //System.out.println("yaxis:  "+yaxis);
+                        //System.out.println("old:  "+oldyAxis);
+                        //System.out.println((abs(yaxis))-(abs(oldyAxis)));
+                        int five = 1;
+                        if (abs(yaxis)-(abs(oldyAxis))>five){
+                            System.out.println(" ");
+                            System.out.println("pothole detected");
+                            System.out.println(" ");
+                            pothole = true;
+                        }
+                    }
+                }
+               return pothole;
             }
 
             @Override
@@ -227,6 +287,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        accelometer.resumeAccelemeter();
         Log.i("called", "Activity --> onResume");
     }
 
