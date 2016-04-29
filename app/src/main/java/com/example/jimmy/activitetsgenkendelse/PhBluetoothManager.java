@@ -205,7 +205,7 @@ public class PhBluetoothManager {
         if (!data.isEmpty() && data.startsWith(lookUpValue)) {
             packageCounter++;
             int nbThreads = Thread.getAllStackTraces().keySet().size();
-            System.out.println("pc:" + packageCounter + "    threads: " + nbThreads);
+            System.out.println("pc:" + packageCounter + "    data:   " + data + "    threads: " + nbThreads);
 
             switch (lookUpPlace) {
                 case 0:
