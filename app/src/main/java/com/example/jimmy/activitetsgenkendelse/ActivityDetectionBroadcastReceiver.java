@@ -28,10 +28,10 @@ public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
             //TekstTilTale.instans(context).tal(tekst);
 
             if (MainActivity.instans != null) {
-                MainActivity.instans.mDetectedActivityTextView.append("\n" + new Date() + "\n");
+                MainActivity.instans.DetectedActivity.append("\n" + new Date() + "\n");
                 for (DetectedActivity a : res.getProbableActivities()) {
                     String log = a.getType() + " " + getBeskrivelse(a.getType()) + " " + +a.getConfidence() + "%\n";
-                    MainActivity.instans.mDetectedActivityTextView.append(log);
+                    MainActivity.instans.DetectedActivity.append(log);
                 }
             }
         }

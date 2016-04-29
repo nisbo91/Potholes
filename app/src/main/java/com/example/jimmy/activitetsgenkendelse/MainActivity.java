@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -17,18 +18,21 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.ActivityRecognition;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity{ //implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>, SensorEventListener {
+public class MainActivity extends AppCompatActivity implements ResultCallback<Status> { //implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>, SensorEventListener {
 
     private GoogleApiClient mGoogleApiClient;
     public static Handler forgrundstråd = new Handler();
 
     static MainActivity instans;
-    TextView mDetectedActivityTextView;
+    TextView DetectedActivity;
     private TableLayout tableLayout;
     private Button startKnap;
     private Button stopKnap;
@@ -66,6 +70,12 @@ public class MainActivity extends AppCompatActivity{ //implements View.OnClickLi
         }
 
         instans = this;
+
+        Intent intent = new Intent(this, ActivityDetectionBroadcastReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                mGoogleApiClient, 5000 , pendingIntent)
+                .setResultCallback(this);
 
         /*
         i = 0;
@@ -137,6 +147,11 @@ public class MainActivity extends AppCompatActivity{ //implements View.OnClickLi
                 }
             }
         }*/
+    }
+
+    @Override
+    public void onResult(Status status) {
+
     }
 
 
