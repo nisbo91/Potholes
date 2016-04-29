@@ -24,8 +24,7 @@ import java.util.UUID;
 /**
  * Created by Jesper de Fries on 10-04-2016.
  */
-public class BluetoothManager {
-
+public class PhBluetoothManager {
 
     Context context;
     Integer packageCounter = 0;
@@ -39,45 +38,20 @@ public class BluetoothManager {
     byte[] readBuffer;
     int readBufferPosition;
     volatile boolean stopWorker;
-    //TextView textView;
     Boolean finaly = false;
     boolean dataFound;
     String lookUpValue = "\n412";
     Integer lookUpPlace = 0;
-    Integer restartCounter = 0;
+    //Integer restartCounter = 0;
 
-    private String speed;
-    private String speedTs;
-    private String steering;
-    private String steeringTs;
-    private String throttle;
-    private String throttleTs;
+    BluetoothData btd = new BluetoothData();
 
-    void setSpeed(String d) {
-        Long tsLong = System.currentTimeMillis() / 1000;
-        this.speed = d;
-        this.speedTs = tsLong.toString();
-        System.out.println("data: " + d + " - " + speedTs);
+    BluetoothData getBluetoothData(){
+        return btd;
     }
 
-    void setSteering(String d) {
-        Long tsLong = System.currentTimeMillis() / 1000;
-        this.steering = d;
-        this.steeringTs = tsLong.toString();
-        System.out.println("data: " + d + " - " + steeringTs);
-    }
-
-    void setThrottle(String d) {
-        Long tsLong = System.currentTimeMillis() / 1000;
-        this.throttle = d;
-        this.throttleTs = tsLong.toString();
-        System.out.println("data: " + d + " - " + throttleTs);
-    }
-
-    public BluetoothManager(final Context context) {
+    public PhBluetoothManager(final Context context) {
         this.context = context;
-        //textView = (TextView) ((Activity) context).findViewById(R.id.counter);
-
 
         // TODO: 10-04-2016 listen for changes on bluetooth
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -235,26 +209,24 @@ public class BluetoothManager {
 
             switch (lookUpPlace) {
                 case 0:
-                    setSpeed(data);
+                    btd.setSpeed(data);
                     break;
                 case 1:
-                    setSteering(data);
+                    btd.setSteering(data);
                     break;
                 case 2:
-                    setThrottle(data);
+                    btd.setThrottle(data);
                     break;
             }
 
-            getNextPid();
-            resetBluetooth();
-            //Runtime.getRuntime().gc();
-            //System.gc();
+            updatePID();
+            setNextPID();
         } else {
             dataFound = false;
         }
     }
 
-    void getNextPid() {
+    void updatePID() {
         switch (lookUpPlace) {
             case 0:
                 lookUpValue = "\n412";
@@ -274,12 +246,11 @@ public class BluetoothManager {
     /***
      * get next PID
      */
-    void resetBluetooth() {
+    void setNextPID() {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
                 try {
-                    //System.out.println("trying to reset bluetooth");
                     sendData("x");
                     SystemClock.sleep(200);
                     sendData(lookUpValue);
@@ -299,7 +270,7 @@ public class BluetoothManager {
      * listen to the inputsocket
      */
     private void beginListenForData() {
-        final Handler handler = new Handler();
+        //final Handler handler = new Handler();
         final byte delimiter = 13;              //This is the ASCII code for carriage return
 
         stopWorker = false;
@@ -331,16 +302,6 @@ public class BluetoothManager {
                                 }
                             }
                             packetBytes=null;
-                        }else{
-                            // TODO: 23-04-2016 if no bytes available....
-                            /*
-                            if (restartCounter > 20) {
-                                restartCounter = 0;
-                                resetBluetooth();
-                            } else {
-                                restartCounter++;
-                            }
-                            */
                         }
                     } catch (Exception ex) {
                         System.out.println("fejl:" + ex.toString());
