@@ -197,6 +197,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 }
             }
 
+
             public boolean detectedPothole(ArrayList data) {
                 int count = data.size();
                 //System.out.println("detected:  " + data);
