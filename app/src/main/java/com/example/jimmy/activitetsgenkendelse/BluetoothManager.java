@@ -26,7 +26,6 @@ import java.util.UUID;
  */
 public class BluetoothManager {
 
-
     Context context;
     Integer packageCounter = 0;
 
@@ -39,44 +38,20 @@ public class BluetoothManager {
     byte[] readBuffer;
     int readBufferPosition;
     volatile boolean stopWorker;
-    //TextView textView;
     Boolean finaly = false;
     boolean dataFound;
     String lookUpValue = "\n412";
     Integer lookUpPlace = 0;
-    Integer restartCounter = 0;
+    //Integer restartCounter = 0;
 
-    private String speed;
-    private String speedTs;
-    private String steering;
-    private String steeringTs;
-    private String throttle;
-    private String throttleTs;
+    BluetoothData btd = new BluetoothData();
 
-    void setSpeed(String d) {
-        Long tsLong = System.currentTimeMillis() / 1000;
-        this.speed = d;
-        this.speedTs = tsLong.toString();
-        System.out.println("data: " + d + " - " + speedTs);
-    }
-
-    void setSteering(String d) {
-        Long tsLong = System.currentTimeMillis() / 1000;
-        this.steering = d;
-        this.steeringTs = tsLong.toString();
-        System.out.println("data: " + d + " - " + steeringTs);
-    }
-
-    void setThrottle(String d) {
-        Long tsLong = System.currentTimeMillis() / 1000;
-        this.throttle = d;
-        this.throttleTs = tsLong.toString();
-        System.out.println("data: " + d + " - " + throttleTs);
+    BluetoothData getBluetoothData(){
+        return btd;
     }
 
     public BluetoothManager(final Context context) {
         this.context = context;
-        //textView = (TextView) ((Activity) context).findViewById(R.id.counter);
 
 
         // TODO: 10-04-2016 listen for changes on bluetooth
@@ -235,13 +210,13 @@ public class BluetoothManager {
 
             switch (lookUpPlace) {
                 case 0:
-                    setSpeed(data);
+                    btd.setSpeed(data);
                     break;
                 case 1:
-                    setSteering(data);
+                    btd.setSteering(data);
                     break;
                 case 2:
-                    setThrottle(data);
+                    btd.setThrottle(data);
                     break;
             }
 
@@ -331,16 +306,6 @@ public class BluetoothManager {
                                 }
                             }
                             packetBytes=null;
-                        }else{
-                            // TODO: 23-04-2016 if no bytes available....
-                            /*
-                            if (restartCounter > 20) {
-                                restartCounter = 0;
-                                resetBluetooth();
-                            } else {
-                                restartCounter++;
-                            }
-                            */
                         }
                     } catch (Exception ex) {
                         System.out.println("fejl:" + ex.toString());
