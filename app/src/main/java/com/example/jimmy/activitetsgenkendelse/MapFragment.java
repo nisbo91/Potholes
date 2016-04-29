@@ -20,6 +20,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.DetectedActivity;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,6 +45,7 @@ import static java.lang.Math.abs;
 public class MapFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback {
 
     static MapFragment synligInstans;
+    public static DetectedActivity MostProbableActivity;
     private Button addPotholeButton;
     private ImageButton settingsButton;
     private GoogleApiClient mGoogleApiClient;
@@ -119,7 +121,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
         locationProvider = locationManager.getBestProvider(criteria, false);
         gpsStatus = locationManager.getGpsStatus(null);
-        System.out.println(""+gpsStatus);
+        System.out.println("GPS STATUS: "+gpsStatus);
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -185,58 +187,26 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
                 mGoogleMap.animateCamera(zoom);
+                System.out.println(MostProbableActivity.getType());
+                System.out.println(MostProbableActivity.IN_VEHICLE);
+                if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE ||MostProbableActivity.getType() == MostProbableActivity.STILL||MostProbableActivity.getType() == MostProbableActivity.UNKNOWN){
+                    dataAccelometer = accelometer.returnData();
+                    boolean pothole=detectedPothole(dataAccelometer);
+                    accelometer.clearData();
+                    if(pothole== true){
 
-                dataAccelometer = accelometer.returnData();
-                boolean pothole=detectedPothole(dataAccelometer);
-                accelometer.clearData();
-                if(pothole== true){
-
-                }
-                else{
-
-                }
-            }
-
-
-            public boolean detectedPothole(ArrayList data) {
-                int count = data.size();
-                //System.out.println("detected:  " + data);
-                int i;
-                boolean pothole = false;
-                double yaxis;
-                yaxis = 0;
-
-                for (i = 0; i < count - 1; i++) {
-                    if(yaxis==0){
-                        String alldata = (String) data.get(i);
-                        //System.out.println("alldata:  "+alldata);
-                        String[] split = alldata.split(",");
-                        //System.out.println("split:  "+ Arrays.toString(split));
-                        yaxis = Double.parseDouble(split[1]);
-                        //System.out.println(yaxis);
                     }
                     else{
-                        double oldyAxis = yaxis;
-                        String alldata = (String) data.get(i);
-                        //System.out.println("alldata:  "+alldata);
-                        String[] split = alldata.split(",");
-                        //System.out.println("split:  "+ Arrays.toString(split));
-                        yaxis = Double.parseDouble(split[1]);
-                        //System.out.println("yaxis:  "+yaxis);
-                        //System.out.println("old:  "+oldyAxis);
-                        //System.out.println((abs(yaxis))-(abs(oldyAxis)));
-                        int five = 1;
-                        if (abs(yaxis)-(abs(oldyAxis))>five){
-                            System.out.println(" ");
-                            System.out.println("pothole detected");
-                            System.out.println(" ");
-                            Functionality.langToast("Pothole detected");
-                            pothole = true;
-                        }
+
                     }
                 }
-               return pothole;
+                else{
+                    accelometer.clearData();
+                }
+
             }
+
+
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -285,6 +255,45 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
     }
 
+    public boolean detectedPothole(ArrayList data) {
+        int count = data.size();
+        //System.out.println("detected:  " + data);
+        int i;
+        boolean pothole = false;
+        double yaxis;
+        yaxis = 0;
+
+        for (i = 0; i < count - 1; i++) {
+            if(yaxis==0){
+                String alldata = (String) data.get(i);
+                //System.out.println("alldata:  "+alldata);
+                String[] split = alldata.split(",");
+                //System.out.println("split:  "+ Arrays.toString(split));
+                yaxis = Double.parseDouble(split[1]);
+                //System.out.println(yaxis);
+            }
+            else{
+                double oldyAxis = yaxis;
+                String alldata = (String) data.get(i);
+                //System.out.println("alldata:  "+alldata);
+                String[] split = alldata.split(",");
+                //System.out.println("split:  "+ Arrays.toString(split));
+                yaxis = Double.parseDouble(split[1]);
+                //System.out.println("yaxis:  "+yaxis);
+                //System.out.println("old:  "+oldyAxis);
+                //System.out.println((abs(yaxis))-(abs(oldyAxis)));
+                int valueChange = 1;
+                if (abs(yaxis)-(abs(oldyAxis))>valueChange){
+                    System.out.println(" ");
+                    System.out.println("pothole detected");
+                    System.out.println(" ");
+                    Functionality.langToast("Pothole detected");
+                    pothole = true;
+                }
+            }
+        }
+        return pothole;
+    }
     @Override
     public void onResume() {
         super.onResume();

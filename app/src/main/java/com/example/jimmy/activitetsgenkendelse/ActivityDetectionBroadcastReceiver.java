@@ -14,6 +14,8 @@ import java.util.Date;
  */
 public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
 
+
+
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -28,12 +30,15 @@ public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
             //TekstTilTale.instans(context).tal(tekst);
 
             if (MainActivity.instans != null) {
-                MainActivity.instans.DetectedActivity.append("\n" + new Date() + "\n");
+                //MainActivity.instans.DetectedActivity.append("\n" + new Date() + "\n");
                 for (DetectedActivity a : res.getProbableActivities()) {
                     String log = a.getType() + " " + getBeskrivelse(a.getType()) + " " + +a.getConfidence() + "%\n";
-                    MainActivity.instans.DetectedActivity.append(log);
+                    //MainActivity.instans.DetectedActivity.append(log);
+                    Functionality.langToast("\n" + new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
+                    System.out.println("\n" + new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
                 }
             }
+            MapFragment.MostProbableActivity = res.getMostProbableActivity();
         }
     }
 

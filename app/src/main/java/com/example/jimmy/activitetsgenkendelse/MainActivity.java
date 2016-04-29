@@ -12,11 +12,13 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TableLayout;
-import android.widget.TextView;
 
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -26,13 +28,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements ResultCallback<Status> { //implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status>, SensorEventListener {
+public class MainActivity extends AppCompatActivity implements ResultCallback<Status>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener { //implements View.OnClickListener
 
     private GoogleApiClient mGoogleApiClient;
     public static Handler forgrundstråd = new Handler();
 
     static MainActivity instans;
-    TextView DetectedActivity;
+    //TextView DetectedActivity;
     private TableLayout tableLayout;
     private Button startKnap;
     private Button stopKnap;
@@ -71,11 +73,17 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
 
         instans = this;
 
+        // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(ActivityRecognition.API)
+                .addApi(AppIndex.API).build();
+        mGoogleApiClient.connect();
+
         Intent intent = new Intent(this, ActivityDetectionBroadcastReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
-        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
-                mGoogleApiClient, 5000 , pendingIntent)
-                .setResultCallback(this);
 
         /*
         i = 0;
@@ -153,6 +161,26 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
     public void onResult(Status status) {
 
     }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.i(TAG, "Connected");
+        ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
+                mGoogleApiClient, 60000 , pendingIntent)
+                .setResultCallback(this); // 60000 = 1 min
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode());
+    }
+
 
 
     /*private void findBluetooth() {
