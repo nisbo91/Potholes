@@ -53,7 +53,6 @@ public class PhBluetoothManager {
     public PhBluetoothManager(final Context context) {
         this.context = context;
 
-
         // TODO: 10-04-2016 listen for changes on bluetooth
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -220,16 +219,14 @@ public class PhBluetoothManager {
                     break;
             }
 
-            getNextPid();
-            resetBluetooth();
-            //Runtime.getRuntime().gc();
-            //System.gc();
+            updatePID();
+            setNextPID();
         } else {
             dataFound = false;
         }
     }
 
-    void getNextPid() {
+    void updatePID() {
         switch (lookUpPlace) {
             case 0:
                 lookUpValue = "\n412";
@@ -249,12 +246,11 @@ public class PhBluetoothManager {
     /***
      * get next PID
      */
-    void resetBluetooth() {
+    void setNextPID() {
         new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] objects) {
                 try {
-                    //System.out.println("trying to reset bluetooth");
                     sendData("x");
                     SystemClock.sleep(200);
                     sendData(lookUpValue);
@@ -274,7 +270,7 @@ public class PhBluetoothManager {
      * listen to the inputsocket
      */
     private void beginListenForData() {
-        final Handler handler = new Handler();
+        //final Handler handler = new Handler();
         final byte delimiter = 13;              //This is the ASCII code for carriage return
 
         stopWorker = false;
