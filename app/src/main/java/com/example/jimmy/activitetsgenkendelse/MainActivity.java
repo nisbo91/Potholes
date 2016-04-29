@@ -1,9 +1,7 @@
 package com.example.jimmy.activitetsgenkendelse;
 
 import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
+import android.bluetooth.*;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -66,6 +64,9 @@ public class MainActivity extends AppCompatActivity{ //implements View.OnClickLi
         }
 
         instans = this;
+
+        PhBluetoothManager mBtm = new PhBluetoothManager(this);
+
 
         /*
         i = 0;

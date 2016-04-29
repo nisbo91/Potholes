@@ -24,7 +24,7 @@ import java.util.UUID;
 /**
  * Created by Jesper de Fries on 10-04-2016.
  */
-public class BluetoothManager {
+public class PhBluetoothManager {
 
     Context context;
     Integer packageCounter = 0;
@@ -50,7 +50,7 @@ public class BluetoothManager {
         return btd;
     }
 
-    public BluetoothManager(final Context context) {
+    public PhBluetoothManager(final Context context) {
         this.context = context;
 
 
