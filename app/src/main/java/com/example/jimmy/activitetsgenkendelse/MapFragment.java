@@ -229,6 +229,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                             System.out.println(" ");
                             System.out.println("pothole detected");
                             System.out.println(" ");
+                            Functionality.langToast("Pothole detected");
                             pothole = true;
                         }
                     }
