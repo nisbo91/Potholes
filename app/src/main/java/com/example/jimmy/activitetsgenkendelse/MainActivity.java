@@ -1,20 +1,12 @@
 package com.example.jimmy.activitetsgenkendelse;
 
 import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.ScrollView;
-import android.widget.TableLayout;
 
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.ConnectionResult;
@@ -23,46 +15,20 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.ActivityRecognition;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-
 public class MainActivity extends AppCompatActivity implements ResultCallback<Status>, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener { //implements View.OnClickListener
 
     private GoogleApiClient mGoogleApiClient;
-    public static Handler forgrundstråd = new Handler();
 
     static MainActivity instans;
-    //TextView DetectedActivity;
-    private TableLayout tableLayout;
-    private Button startKnap;
-    private Button stopKnap;
     private PendingIntent pendingIntent;
     private String TAG;
-    private ScrollView scrollView;
-    private SensorManager mSensorManager;
-    private Sensor mLinearAccelerometer;
-    float[] linear_acceleration = new float[]{0,0,0};
-    public String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/aatest";
-    private int i;
-    private ArrayList<String> data;
 
-    // bluetooth stuff
-    BluetoothAdapter mBluetoothAdapter;
-    BluetoothSocket mSocket;
-    BluetoothDevice mDevice;
-    OutputStream mOutputStream;
-    InputStream mInputStream;
-    Thread workerThread;
-    byte[] readBuffer;
-    int readBufferPosition;
-    int counter;
-    volatile boolean stopWorker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -80,6 +46,9 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
                 .addApi(ActivityRecognition.API)
                 .addApi(AppIndex.API).build();
         mGoogleApiClient.connect();
+
+        Intent intent = new Intent(this, ActivityDetectionBroadcastReceiver.class);
+        pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
     }
 
     @Override

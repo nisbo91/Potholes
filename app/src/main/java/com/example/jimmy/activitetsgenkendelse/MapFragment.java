@@ -3,8 +3,8 @@ package com.example.jimmy.activitetsgenkendelse;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -27,6 +27,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -42,11 +44,12 @@ import static java.lang.Math.abs;
  */
 
 
-public class MapFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback {
+public class MapFragment extends Fragment implements View.OnClickListener, OnMapReadyCallback, GoogleMap.OnMapClickListener {
 
     static MapFragment synligInstans;
     public static DetectedActivity MostProbableActivity;
     public static int accelometerAccuracyIndicator = 0;  //0= Unreliable, 1=Low Accuracy, 2=Medium Accuracy, 3=High Accuracy
+    private static Location location;
     private Button addPotholeButton;
     private ImageButton settingsButton;
     private GoogleApiClient mGoogleApiClient;
@@ -54,16 +57,14 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     private GoogleMap mGoogleMap;
     private LocationManager locationManager;
     private String locationProvider;
-    public static final int OUT_OF_SERVICE = 0;
-    public static final int TEMPORARILY_UNAVAILABLE = 1;
-    public static final int AVAILABLE = 2;
     private List<String> providers; //[passive, gps, network]
     private TextView accelometerTextView;
     private TextView gpsTextView;
-    private GpsStatus gpsStatus;
     private Accelometer accelometer;
     private ArrayList<String> dataAccelometer;
     private float locationAccuracy; // accuracy in meters, 0=no gps signal, else smaller equal better accuracy. We define accuracy as the radius of 68% confidence.
+    private long potholeTimestamp;
+    private Circle circle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -98,7 +99,12 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         Intent intent = new Intent();
         switch (v.getId()) {
             case R.id.addPotholeButton:
-
+                // TODO: 03-05-2016 add some check for other markers at the position
+                circle = mGoogleMap.addCircle(new CircleOptions()
+                        .center(new LatLng(location.getLatitude(),location.getLongitude()))
+                        .radius(locationAccuracy)
+                        .strokeColor(Color.parseColor("#500084d3"))
+                        .fillColor(Color.parseColor("#500084d3")));
                 break;
             case R.id.settingsButton:
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -114,6 +120,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setAllGesturesEnabled(true);
+        mGoogleMap.setOnMapClickListener(this);
 
         // Acquire a reference to the system Location Manager
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -133,10 +140,11 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             return;
         }
         Location location = locationManager.getLastKnownLocation(locationProvider);
+        MapFragment.location = location;
         locationAccuracy = location.getAccuracy();
         SetAccuracyIndicator(locationAccuracy,accelometerAccuracyIndicator);
         //System.out.println(locationProvider);
-        System.out.println(location);
+        //System.out.println(location);
         //initialize the location
         if (location != null) {
 
@@ -158,6 +166,17 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             @Override
             public void onLocationChanged(Location location) {
                 Log.i("called", "onLocationChanged");
+                MapFragment.location = location;
+                float[] distance = new float[4];
+
+                location.distanceBetween(location.getLatitude(),location.getLongitude(),circle.getCenter().latitude,circle.getCenter().longitude,distance);
+
+                if( distance[0] > circle.getRadius() ){
+                    checkAlert();
+                } else {
+
+                }
+
                 //define the location manager criteria
                 Criteria criteria = new Criteria();
 
@@ -193,12 +212,17 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 //System.out.println(MostProbableActivity.getType());
                 //System.out.println(MostProbableActivity.IN_VEHICLE);
                 try{
-                    if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE ||MostProbableActivity.getType() == MostProbableActivity.STILL){
+                    if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE){ //||MostProbableActivity.getType() == MostProbableActivity.STILL){
                         dataAccelometer = accelometer.returnData();
                         boolean pothole=detectedPothole(dataAccelometer);
                         accelometer.clearData();
                         if(pothole== true){
-                            
+                            // send data to database (pothole, potholetimestamp, location, accuracy, Car speed, Car Stering, car throttle)
+                            circle = mGoogleMap.addCircle(new CircleOptions()
+                                    .center(new LatLng(location.getLatitude(),location.getLongitude()))
+                                    .radius(locationAccuracy)
+                                    .strokeColor(Color.parseColor("#500084d3"))
+                                    .fillColor(Color.parseColor("#500084d3")));
                         }
                         else{
 
@@ -231,6 +255,17 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    }
+
+    private void checkAlert() {
+        Boolean check = SettingsFragment.CheckAlert();
+        if (check == true){
+            playSound();
+        }
+    }
+
+    private void playSound() {
+        // TODO: 03-05-2016 play a sound when position is inside circles. 
     }
 
     private void SetAccuracyIndicator(float locationAccuracy, int accelometerAccuracyIndicator) {
@@ -281,6 +316,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         int i;
         boolean pothole = false;
         double yaxis;
+        long timestamp;
+        int valueChange = 1;
         yaxis = 0;
 
         for (i = 0; i < count - 1; i++) {
@@ -291,6 +328,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 //System.out.println("split:  "+ Arrays.toString(split));
                 yaxis = Double.parseDouble(split[1]);
                 //System.out.println(yaxis);
+                timestamp = Long.parseLong(split[3]);
             }
             else{
                 double oldyAxis = yaxis;
@@ -302,13 +340,14 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 //System.out.println("yaxis:  "+yaxis);
                 //System.out.println("old:  "+oldyAxis);
                 //System.out.println((abs(yaxis))-(abs(oldyAxis)));
-                int valueChange = 1;
+                timestamp = Long.parseLong(split[3]);
                 if (abs(yaxis)-(abs(oldyAxis))>valueChange){
                     System.out.println(" ");
                     System.out.println("pothole detected");
                     System.out.println(" ");
                     Functionality.langToast("Pothole detected");
                     pothole = true;
+                    potholeTimestamp = timestamp;
                 }
             }
         }
@@ -348,5 +387,14 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         super.onLowMemory();
         mapView.onLowMemory();
         Log.i("called", "Activity --> onLowMemory");
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+        circle = mGoogleMap.addCircle(new CircleOptions()
+                .center(new LatLng(latLng.latitude,latLng.longitude))
+                .radius(locationAccuracy)
+                .strokeColor(Color.parseColor("#500084d3"))
+                .fillColor(Color.parseColor("#500084d3")));
     }
 }

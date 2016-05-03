@@ -30,21 +30,12 @@ public class Accelometer implements SensorEventListener {
         linear_acceleration[0] = event.values[SensorManager.DATA_X];
         linear_acceleration[1] = event.values[SensorManager.DATA_Y];
         linear_acceleration[2] = event.values[SensorManager.DATA_Z];
+        long timestampLinearAcceleration = System.currentTimeMillis();
         //System.out.println("\nX: " + linear_acceleration[0] + "\nY: " + linear_acceleration[1] + "\nZ: " + linear_acceleration[2] + "\n");
         //Log.i("plottegraf", "X:" + linear_acceleration[0] + " Y:" + linear_acceleration[1] + " Z:" + linear_acceleration[2]);
         lastDataAccelometer =(linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
-        dataAccelometer.add(linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]);
+        dataAccelometer.add(linear_acceleration[0] + "," + linear_acceleration[1] + "," + linear_acceleration[2]+","+timestampLinearAcceleration);
     }
-
-    /*public String returnLastData(){
-        if(lastDataAccelometer != null){
-            return lastDataAccelometer;
-        }
-        else{
-            System.out.println("no data");
-            return null;
-        }
-    }*/
 
     public ArrayList<String> returnData(){
         if(lastDataAccelometer != null){

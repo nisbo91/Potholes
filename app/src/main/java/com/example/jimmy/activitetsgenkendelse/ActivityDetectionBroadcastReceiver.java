@@ -34,8 +34,8 @@ public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
                 for (DetectedActivity a : res.getProbableActivities()) {
                     String log = a.getType() + " " + getBeskrivelse(a.getType()) + " " + +a.getConfidence() + "%\n";
                     //MainActivity.instans.DetectedActivity.append(log);
-                    Functionality.langToast("\n" + new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
-                    System.out.println("\n" + new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
+                    //Functionality.langToast("\n" + new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
+                    System.out.println(new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
                 }
             }
             MapFragment.MostProbableActivity = res.getMostProbableActivity();
