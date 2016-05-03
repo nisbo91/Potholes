@@ -46,6 +46,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
     static MapFragment synligInstans;
     public static DetectedActivity MostProbableActivity;
+    public static int accelometerAccuracyIndicator = 0;  //0= Unreliable, 1=Low Accuracy, 2=Medium Accuracy, 3=High Accuracy
     private Button addPotholeButton;
     private ImageButton settingsButton;
     private GoogleApiClient mGoogleApiClient;
@@ -57,11 +58,12 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     public static final int TEMPORARILY_UNAVAILABLE = 1;
     public static final int AVAILABLE = 2;
     private List<String> providers; //[passive, gps, network]
-    private TextView netTextView;
+    private TextView accelometerTextView;
     private TextView gpsTextView;
     private GpsStatus gpsStatus;
     private Accelometer accelometer;
     private ArrayList<String> dataAccelometer;
+    private float locationAccuracy; // accuracy in meters, 0=no gps signal, else smaller equal better accuracy. We define accuracy as the radius of 68% confidence.
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,7 +74,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
         addPotholeButton = (Button) v.findViewById(R.id.addPotholeButton);
         settingsButton = (ImageButton) v.findViewById(R.id.settingsButton);
-        netTextView = (TextView) v.findViewById(R.id.netTextview);
+        accelometerTextView = (TextView) v.findViewById(R.id.netTextview);
         gpsTextView = (TextView) v.findViewById(R.id.gpsTextview);
 
         mapView = (MapView) v.findViewById(R.id.mapview);
@@ -120,8 +122,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         Criteria criteria = new Criteria();
 
         locationProvider = locationManager.getBestProvider(criteria, false);
-        gpsStatus = locationManager.getGpsStatus(null);
-        System.out.println("GPS STATUS: "+gpsStatus);
         if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -133,7 +133,9 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             return;
         }
         Location location = locationManager.getLastKnownLocation(locationProvider);
-        System.out.println(locationProvider);
+        locationAccuracy = location.getAccuracy();
+        SetAccuracyIndicator(locationAccuracy,accelometerAccuracyIndicator);
+        //System.out.println(locationProvider);
         System.out.println(location);
         //initialize the location
         if (location != null) {
@@ -177,7 +179,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 }
 
                 location = locationManager.getLastKnownLocation(locationProvider);
-
+                locationAccuracy = location.getAccuracy();
+                SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
                 // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
                 //MapsInitializer.initialize(getActivity());
 
@@ -187,57 +190,32 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
                 mGoogleMap.animateCamera(zoom);
-                System.out.println(MostProbableActivity.getType());
-                System.out.println(MostProbableActivity.IN_VEHICLE);
-                if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE ||MostProbableActivity.getType() == MostProbableActivity.STILL||MostProbableActivity.getType() == MostProbableActivity.UNKNOWN){
-                    dataAccelometer = accelometer.returnData();
-                    boolean pothole=detectedPothole(dataAccelometer);
-                    accelometer.clearData();
-                    if(pothole== true){
+                //System.out.println(MostProbableActivity.getType());
+                //System.out.println(MostProbableActivity.IN_VEHICLE);
+                try{
+                    if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE ||MostProbableActivity.getType() == MostProbableActivity.STILL){
+                        dataAccelometer = accelometer.returnData();
+                        boolean pothole=detectedPothole(dataAccelometer);
+                        accelometer.clearData();
+                        if(pothole== true){
+                            
+                        }
+                        else{
 
+                        }
                     }
                     else{
-
+                        accelometer.clearData();
                     }
                 }
-                else{
-                    accelometer.clearData();
+                catch(Exception e){
+                    Log.e("error", String.valueOf(e));
                 }
-
             }
-
-
 
             @Override
             public void onStatusChanged(String provider, int status, Bundle extras) {
-                if (provider == providers.get(0)){
 
-                }
-                if (provider == providers.get(1)){
-                    if (status==OUT_OF_SERVICE){
-                        gpsTextView.setBackgroundResource(red);
-                    }
-                    if (status==TEMPORARILY_UNAVAILABLE){
-                        gpsTextView.setBackgroundResource(yellow);
-                    }
-                    if (status==AVAILABLE){
-                        gpsTextView.setBackgroundResource(green);
-                    }
-                }
-                if(provider == providers.get(2)){
-                    if (status==OUT_OF_SERVICE){
-                        netTextView.setBackgroundResource(red);
-                    }
-                    if (status==TEMPORARILY_UNAVAILABLE){
-                        gpsTextView.setBackgroundResource(yellow);
-                    }
-                    if (status==AVAILABLE){
-                        netTextView.setBackgroundResource(green);
-                    }
-                }
-                else{
-
-                }
             }
 
             @Override
@@ -253,6 +231,48 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    }
+
+    private void SetAccuracyIndicator(float locationAccuracy, int accelometerAccuracyIndicator) {
+        if (locationAccuracy == 0){
+            gpsTextView.setBackgroundResource(red);
+
+            if (accelometerAccuracyIndicator == 0){
+                accelometerTextView.setBackgroundResource(red);
+            }
+            if (accelometerAccuracyIndicator == 1 || accelometerAccuracyIndicator == 2){
+                accelometerTextView.setBackgroundResource(yellow);
+            }
+            if (accelometerAccuracyIndicator == 3){
+                accelometerTextView.setBackgroundResource(green);
+            }
+        }
+        if (locationAccuracy>0 && locationAccuracy<=25){
+            gpsTextView.setBackgroundResource(green);
+
+            if (accelometerAccuracyIndicator == 0){
+                accelometerTextView.setBackgroundResource(red);
+            }
+            if (accelometerAccuracyIndicator == 1 || accelometerAccuracyIndicator == 2){
+                accelometerTextView.setBackgroundResource(yellow);
+            }
+            if (accelometerAccuracyIndicator == 3){
+                accelometerTextView.setBackgroundResource(green);
+            }
+        }
+        if (locationAccuracy>25){
+            gpsTextView.setBackgroundResource(yellow);
+
+            if (accelometerAccuracyIndicator == 0){
+                accelometerTextView.setBackgroundResource(red);
+            }
+            if (accelometerAccuracyIndicator == 1 || accelometerAccuracyIndicator == 2){
+                accelometerTextView.setBackgroundResource(yellow);
+            }
+            if (accelometerAccuracyIndicator == 3){
+                accelometerTextView.setBackgroundResource(green);
+            }
+        }
     }
 
     public boolean detectedPothole(ArrayList data) {

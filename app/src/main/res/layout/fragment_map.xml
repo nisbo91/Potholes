@@ -12,26 +12,30 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="right"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:weightSum="1">
     <TextView
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="25dp"
-        android:text="NET"
+        android:text="Accelometer"
         android:id="@+id/netTextview"
         android:gravity="center"
         android:background="@color/red"
         android:layout_gravity="right|top"
+        android:layout_weight="0.37"
         android:textSize="18dp" />
 
         <TextView
             android:layout_width="5dp"
             android:layout_height="wrap_content"
+            android:layout_weight="0.01"
             android:id="@+id/textView6" />
 
         <TextView
-        android:layout_width="50dp"
+        android:layout_width="wrap_content"
         android:layout_height="25dp"
         android:text="GPS"
+            android:layout_weight="0.63"
         android:id="@+id/gpsTextview"
         android:gravity="center"
         android:background="@color/red"
