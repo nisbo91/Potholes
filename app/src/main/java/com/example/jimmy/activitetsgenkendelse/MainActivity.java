@@ -2,6 +2,7 @@ package com.example.jimmy.activitetsgenkendelse;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
     static MainActivity instans;
     private PendingIntent pendingIntent;
     private String TAG;
+    private ActivityDetectionBroadcastReceiver mBroadcastReceiver;
 
 
     @Override
@@ -47,8 +49,24 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
                 .addApi(AppIndex.API).build();
         mGoogleApiClient.connect();
 
+        mBroadcastReceiver = new ActivityDetectionBroadcastReceiver();
+
         Intent intent = new Intent(this, ActivityDetectionBroadcastReceiver.class);
         pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter intentFilter = new IntentFilter();
+        registerReceiver(mBroadcastReceiver, intentFilter);
+        Log.i("called", "Activity --> onResume (Main)");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mBroadcastReceiver);
+        Log.i("called", "Activity --> onPause (Main)");
     }
 
     @Override
@@ -60,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
     public void onConnected(Bundle bundle) {
         Log.i(TAG, "Connected");
         ActivityRecognition.ActivityRecognitionApi.requestActivityUpdates(
-                mGoogleApiClient, 60000 , pendingIntent)
+                mGoogleApiClient, 5000 , pendingIntent)
                 .setResultCallback(this); // 60000 = 1 min
     }
 

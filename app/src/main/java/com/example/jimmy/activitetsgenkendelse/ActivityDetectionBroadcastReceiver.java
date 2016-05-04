@@ -60,4 +60,6 @@ public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
         }
         return "Ukendt aktivitet";
     }
+
+
 }

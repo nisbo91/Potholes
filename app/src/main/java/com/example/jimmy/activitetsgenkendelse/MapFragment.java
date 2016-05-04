@@ -169,7 +169,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 MapFragment.location = location;
                 float[] distance = new float[4];
 
-                location.distanceBetween(location.getLatitude(),location.getLongitude(),circle.getCenter().latitude,circle.getCenter().longitude,distance);
+                Location.distanceBetween(location.getLatitude(),location.getLongitude(),circle.getCenter().latitude,circle.getCenter().longitude,distance);
 
                 if( distance[0] > circle.getRadius() ){
                     checkAlert();
@@ -265,7 +265,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     }
 
     private void playSound() {
-        // TODO: 03-05-2016 play a sound when position is inside circles. 
+        // TODO: 03-05-2016 play a sound when position is inside circles.
     }
 
     private void SetAccuracyIndicator(float locationAccuracy, int accelometerAccuracyIndicator) {
