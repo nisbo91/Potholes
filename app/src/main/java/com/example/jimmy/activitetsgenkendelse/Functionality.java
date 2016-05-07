@@ -14,7 +14,7 @@ public class Functionality {
         forgrundstråd.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(MainActivity.instans, txt, Toast.LENGTH_LONG).show();
+                Toast.makeText(Login.instans, txt, Toast.LENGTH_LONG).show();
             }
         });
     }

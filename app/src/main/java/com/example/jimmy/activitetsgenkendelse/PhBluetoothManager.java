@@ -66,6 +66,7 @@ public class PhBluetoothManager {
                     switch (state) {
                         case BluetoothAdapter.STATE_OFF:
                             System.out.println("off");
+                            Functionality.langToast("Turn on bluetooth");
                             closeApp();
                             break;
                         case BluetoothAdapter.STATE_ON:

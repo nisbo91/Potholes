@@ -1,5 +1,6 @@
 package com.example.jimmy.activitetsgenkendelse;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,9 +9,11 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,8 +51,9 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
     static MapFragment synligInstans;
     public static DetectedActivity MostProbableActivity;
-    public static int accelometerAccuracyIndicator = 0;  //0= Unreliable, 1=Low Accuracy, 2=Medium Accuracy, 3=High Accuracy
     private static Location location;
+    private FragmentActivityCommunication fragmentCommunication;
+    public static int accelometerAccuracyIndicator = 0;  //0= Unreliable, 1=Low Accuracy, 2=Medium Accuracy, 3=High Accuracy
     private Button addPotholeButton;
     private ImageButton settingsButton;
     private GoogleApiClient mGoogleApiClient;
@@ -65,6 +69,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     private float locationAccuracy; // accuracy in meters, 0=no gps signal, else smaller equal better accuracy. We define accuracy as the radius of 68% confidence.
     private long potholeTimestamp;
     private Circle circle;
+    private FragmentActivity context;
+    private boolean soundplayed;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -140,13 +146,13 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             return;
         }
         Location location = locationManager.getLastKnownLocation(locationProvider);
-        MapFragment.location = location;
-        locationAccuracy = location.getAccuracy();
-        SetAccuracyIndicator(locationAccuracy,accelometerAccuracyIndicator);
-        //System.out.println(locationProvider);
-        //System.out.println(location);
-        //initialize the location
         if (location != null) {
+            MapFragment.location = location;
+            locationAccuracy = location.getAccuracy();
+            SetAccuracyIndicator(locationAccuracy,accelometerAccuracyIndicator);
+            //System.out.println(locationProvider);
+            //System.out.println(location);
+            //initialize the location
 
             // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
             MapsInitializer.initialize(getActivity());
@@ -159,6 +165,9 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             mGoogleMap.animateCamera(zoom);
 
         }
+        else{
+            System.out.println("location null: "+location);
+        }
 
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
@@ -167,15 +176,25 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             public void onLocationChanged(Location location) {
                 Log.i("called", "onLocationChanged");
                 MapFragment.location = location;
-                float[] distance = new float[4];
+                float[] distance = new float[10];
+                if (circle!= null){
+                    Location.distanceBetween(location.getLatitude(),location.getLongitude(),circle.getCenter().latitude,circle.getCenter().longitude,distance);
 
-                Location.distanceBetween(location.getLatitude(),location.getLongitude(),circle.getCenter().latitude,circle.getCenter().longitude,distance);
-
-                if( distance[0] > circle.getRadius() ){
-                    checkAlert();
-                } else {
-
+                    if( distance[0] > circle.getRadius() ){
+                        System.out.println("udenfor ");
+                        soundplayed = false;
+                    } else {
+                        System.out.println("indenfor ");
+                        if (soundplayed == false){
+                            checkAlert();
+                            soundplayed = true;
+                        }
+                    }
                 }
+                else{
+                    System.out.println("no circles");
+                }
+
 
                 //define the location manager criteria
                 Criteria criteria = new Criteria();
@@ -258,14 +277,20 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     }
 
     private void checkAlert() {
-        Boolean check = SettingsFragment.CheckAlert();
+        Boolean check = fragmentCommunication.getDataCheck();
         if (check == true){
             playSound();
+        }
+        else{
+            System.out.println("no bip");
         }
     }
 
     private void playSound() {
         // TODO: 03-05-2016 play a sound when position is inside circles.
+        System.out.println("bip bip");
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.alert);
+        mediaPlayer.start(); // no need to call prepare(); create() does that for you
     }
 
     private void SetAccuracyIndicator(float locationAccuracy, int accelometerAccuracyIndicator) {
@@ -369,6 +394,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         Log.i("called", "Activity --> onPause");
     }
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -396,5 +422,11 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 .radius(locationAccuracy)
                 .strokeColor(Color.parseColor("#500084d3"))
                 .fillColor(Color.parseColor("#500084d3")));
+    }
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        context = getActivity();
+        fragmentCommunication =(FragmentActivityCommunication)context;
     }
 }
