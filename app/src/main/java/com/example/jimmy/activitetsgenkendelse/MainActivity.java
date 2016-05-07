@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -39,9 +38,9 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        //bluetooth = new PhBluetoothManager(getApplicationContext());
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+        bluetooth = new PhBluetoothManager(getApplicationContext());
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         iMEI = preferences.getString("iMEI", null);

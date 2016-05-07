@@ -11,7 +11,6 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -89,7 +88,8 @@ public class PhBluetoothManager {
             if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
 
                 // TODO: 10-04-2016 ask user to turn on bluetooth
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context,android.R.style.Theme_Material_Light_Dialog_Alert );
+                //AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.myDialog);
                 builder.setTitle("Bluetooth not enabled.");
                 builder.setPositiveButton("Enable", new DialogInterface.OnClickListener() {
                     @Override
