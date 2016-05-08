@@ -64,7 +64,7 @@ public class PhBluetoothManager {
                         case BluetoothAdapter.STATE_OFF:
                             System.out.println("off");
                             Functionality.langToast("Turn on bluetooth");
-                            //closeApp();
+                            closeApp();
                             break;
                         case BluetoothAdapter.STATE_ON:
                             System.out.println("on");
@@ -349,7 +349,6 @@ public class PhBluetoothManager {
             @Override
             public void run() {
                 try {
-                    SystemClock.sleep(3500);
                     System.exit(0);
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
