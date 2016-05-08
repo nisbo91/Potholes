@@ -372,10 +372,14 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                     System.out.println(" ");
                     //Functionality.langToast("Pothole detected");
                     String method = "pothole";
-                    double latitude = location.getLatitude();
-                    double longitude = location.getLongitude();
-                    ArrayList mobile_accelerometer_data = data;
-
+                    String latitude = String.valueOf(location.getLatitude());
+                    String longitude = String.valueOf(location.getLongitude());
+                    String mobile_accelerometer_data = String.valueOf(yaxis);
+                    BluetoothData bluetoothData = new BluetoothData();
+                    String OBD_car_speed = bluetoothData.speed;
+                    String OBD_steering_wheel_pos = bluetoothData.steering;
+                    String OBD_throttle = bluetoothData.throttle;
+                    String OBD_odometer = "";
                     BackbroundTask backgroundTask = new BackbroundTask(MainActivity.instans);
                     backgroundTask.execute(method,latitude,longitude,mobile_accelerometer_data,OBD_car_speed,OBD_throttle,OBD_steering_wheel_pos,OBD_odometer);
                     pothole = true;
