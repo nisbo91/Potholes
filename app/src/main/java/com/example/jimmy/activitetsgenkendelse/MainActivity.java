@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
         bluetooth = new PhBluetoothManager(getApplicationContext());
+        Log.i("bluetooth","bluetooth: "+bluetooth);
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         iMEI = preferences.getString("iMEI", null);

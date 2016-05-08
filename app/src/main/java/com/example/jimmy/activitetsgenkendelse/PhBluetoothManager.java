@@ -10,7 +10,6 @@ import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,8 +79,8 @@ public class PhBluetoothManager {
 
         // TODO: 10-04-2016 if device does not support bluetooth
         if (BluetoothAdapter.getDefaultAdapter() == null) {
-            Toast.makeText(context, "Bluetooth Not Supported On Device", Toast.LENGTH_LONG);
-            closeApp();
+            Functionality.langToast("Bluetooth Not Supported On Device");
+            //closeApp();
         } else {
             // TODO: 10-04-2016 test if bluetooth is enabled
             if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
@@ -106,7 +105,6 @@ public class PhBluetoothManager {
                 });
                 builder.create().show();*/
                 Functionality.langToast("Bluetooth disabled....\nPlease enable bluetooth in settings");
-                closeApp();
             } else {
                 // TODO: 10-04-2016 make connection
                 System.out.println("Make Connection");

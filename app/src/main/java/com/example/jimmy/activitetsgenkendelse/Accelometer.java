@@ -55,22 +55,22 @@ public class Accelometer implements SensorEventListener {
         switch (accuracy) {
             case 0:
                 System.out.println("Accuracy changed: Unreliable");
-                Functionality.langToast("Accuracy changed: Unreliable");
+                //Functionality.langToast("Accuracy changed: Unreliable");
                 MapFragment.accelometerAccuracyIndicator = 0;
                 break;
             case 1:
                 System.out.println("Accuracy changed: Low Accuracy");
-                Functionality.langToast("Accuracy changed: Low Accuracy");
+                //Functionality.langToast("Accuracy changed: Low Accuracy");
                 MapFragment.accelometerAccuracyIndicator = 1;
                 break;
             case 2:
                 System.out.println("Accuracy changed: Medium Accuracy");
-                Functionality.langToast("Accuracy changed: Medium Accuracy");
+                //Functionality.langToast("Accuracy changed: Medium Accuracy");
                 MapFragment.accelometerAccuracyIndicator = 2;
                 break;
             case 3:
                 System.out.println("Accuracy changed: High Accuracy");
-                Functionality.langToast("Accuracy changed: High Accuracy");
+                //Functionality.langToast("Accuracy changed: High Accuracy");
                 MapFragment.accelometerAccuracyIndicator = 3;
                 break;
         }
