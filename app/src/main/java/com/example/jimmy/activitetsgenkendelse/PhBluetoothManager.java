@@ -64,12 +64,7 @@ public class PhBluetoothManager {
                         case BluetoothAdapter.STATE_OFF:
                             System.out.println("off");
                             Functionality.langToast("Turn on bluetooth");
-                            try {
-                                Thread.sleep(3500);
-                                closeApp();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            closeApp();
                             break;
                         case BluetoothAdapter.STATE_ON:
                             System.out.println("on");
@@ -85,12 +80,7 @@ public class PhBluetoothManager {
         // TODO: 10-04-2016 if device does not support bluetooth
         if (BluetoothAdapter.getDefaultAdapter() == null) {
             Functionality.langToast("Bluetooth Not Supported On Device");
-            try {
-                Thread.sleep(3500);
-                closeApp();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            closeApp();
         } else {
             // TODO: 10-04-2016 test if bluetooth is enabled
             if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
@@ -364,7 +354,7 @@ public class PhBluetoothManager {
                     throwable.printStackTrace();
                 }
             }
-        }, 2000);
+        }, 3500);
     }
 
     private void turnOnBluetooth() {
