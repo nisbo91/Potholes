@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
@@ -88,7 +87,7 @@ public class PhBluetoothManager {
             if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
 
                 // TODO: 10-04-2016 ask user to turn on bluetooth
-                android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context,android.R.style.Theme_Material_Light_Dialog_Alert );
+                /*android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context,android.R.style.Theme_Material_Light_Dialog_Alert );
                 //AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.myDialog);
                 builder.setTitle("Bluetooth not enabled.");
                 builder.setPositiveButton("Enable", new DialogInterface.OnClickListener() {
@@ -105,7 +104,9 @@ public class PhBluetoothManager {
                         closeApp();
                     }
                 });
-                builder.create().show();
+                builder.create().show();*/
+                Functionality.langToast("Bluetooth disabled....\nPlease enable bluetooth in settings");
+                closeApp();
             } else {
                 // TODO: 10-04-2016 make connection
                 System.out.println("Make Connection");
