@@ -49,7 +49,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         }
 
     }
-    public void processValue(String result)
+    /*public void processValue(String result)
     {
         //handle value
         System.out.println(result.toString());

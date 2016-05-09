@@ -149,7 +149,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         if (location != null) {
             MapFragment.location = location;
             locationAccuracy = location.getAccuracy();
-            SetAccuracyIndicator(locationAccuracy,accelometerAccuracyIndicator);
+            SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
             //System.out.println(locationProvider);
             //System.out.println(location);
             //initialize the location
@@ -164,10 +164,12 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
             mGoogleMap.animateCamera(zoom);
 
+        } else {
+            System.out.println("location null: " + location);
         }
-        else{
-            System.out.println("location null: "+location);
-        }
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    }
 
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
@@ -271,10 +273,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
             }
         };
-
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-    }
 
     private void checkAlert() {
         Boolean check = fragmentCommunication.getDataCheck();

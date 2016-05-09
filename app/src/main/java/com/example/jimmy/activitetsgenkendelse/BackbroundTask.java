@@ -193,14 +193,15 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
         if (result != null){
             if (result.equals("Registration Success...")) // viser at registering af data lykkes
             {
-                Functionality.langToast(result);
+                //Functionality.langToast(result);
                 //Register register = new Register();
                 //register.processValue(result);
+                ((Activity)ctx).finish();
 
             }
             if (result.equals("Login Success...")) // viser at registering af data lykkes
             {
-                Functionality.langToast(result);
+                //Functionality.langToast(result);
                 Intent intent = new Intent(ctx, MainActivity.class);
                 ctx.startActivity(intent);
                 ((Activity)ctx).finish();
