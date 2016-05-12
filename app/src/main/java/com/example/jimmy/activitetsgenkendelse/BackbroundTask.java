@@ -1,9 +1,7 @@
 package com.example.jimmy.activitetsgenkendelse;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
@@ -38,15 +36,25 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected String doInBackground(String... params) {
+        //IP når der simuleres på simu mobil Wampserver
+        //      String reg_url = "http://10.0.2.2/potholeappdb/register.php";
+        //      String login_url = "http://10.0.2.2/potholeappdb/login.php";
+        // IP udefra
+        //  String reg_url = "http://80.62.116.149/potholeappdb/register.php";
+        //  String login_url = "http://80.62.116.149/potholeappdb/login.php";
+        // IP lokalt
+        //  String reg_url = "http://192.168.0.201/potholeappdb/register.php";
+        //   String login_url = "http://192.168.0.201/potholeappdb/login.php";
+        //IP der bruges Jespers Lamp server fra app
         String reg_url = "http://87.72.39.104/potholeappdb/register.php";
-        String login_url = "http://87.72.39.104/potholeappdb/register.php";
-        //String reg_url = "http://10.0.2.2/potholeappdb/register.php";
-       //String login_url = "http://10.0.2.2/potholeappdb/login.php";
-      //  String reg_url = "http://80.62.116.107/potholeappdb/register.php";
-      //  String login_url = "http://80.62.116.107/potholeappdb/login.php";
+        String login_url = "http://87.72.39.104/potholeappdb/login.php";
+        String uploadData_url = "http://87.72.39.104/potholeappdb/uploadData.php";
+        String getData_url = "http://87.72.39.104/potholeappdb/getData.php";
+        String detect_order_info_set_url = "http://87.72.39.104/potholeappdb/detect_order_info_set.php";
+        String detect_order_info_Get_url = "http://87.72.39.104/potholeappdb/detect_order_info_Get.php";
 
-    //    String reg_url = "http://192.168.0.201/potholeappdb/register.php";
-    //    String login_url = "http://192.168.0.201/potholeappdb/login.php";
+
+
 
         String method = params[0];
         if (method.equals("register")) {
@@ -54,8 +62,7 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
             String user_name = params[2];
             String user_password = params[3];
             String age = params[4];
-            String email=params[5];
-            String IMEI= params[6];
+            String email =params[5];
             URL url = null;
             try {
                 url = new URL(reg_url);
@@ -68,42 +75,190 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                         URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(user_name, "UTF-8") + "&" +
                         URLEncoder.encode("user_password", "UTF-8") + "=" + URLEncoder.encode(user_password, "UTF-8") + "&" +
                         URLEncoder.encode("age", "UTF-8") + "=" + URLEncoder.encode(age, "UTF-8")+ "&" +
-                        URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
-                        URLEncoder.encode("IMEI_number", "UTF-8") + "=" + URLEncoder.encode(IMEI, "UTF-8");
+                        URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+                ;
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
                 bufferedWriter.close();
                 OS.close();
                 InputStream IS = httpURLConnection.getInputStream();
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS, "iso-8859-1"));
+                String respons = "";
+                String line = "";
+                while ((line = bufferedReader.readLine()) != null) {
+                    respons += line;
+                }
+                bufferedReader.close();
                 IS.close();
-                return "Registration Success...";
+                httpURLConnection.disconnect();
+                return respons;
             } catch (MalformedURLException e) {
                 e.printStackTrace();
-                return null;
             } catch (IOException e) {
                 e.printStackTrace();
-                return null;
             }
 
-        } else if (method.equals("login")) {
-            String login_name = params[1];
-            String login_password = params[2];
-            try {
-                URL url = new URL(login_url);
+        } else {
+            if (method.equals("login")) {
+                String login_name = params[1];
+                String login_password = params[2];
                 try {
+                    URL url = new URL(login_url);
+                    try {
+                        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                        httpURLConnection.setRequestMethod("POST");
+                        httpURLConnection.setDoOutput(true);
+                        httpURLConnection.setDoInput(true);
+                        OutputStream outputStream = httpURLConnection.getOutputStream();
+                        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                        String data = URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(login_name, "UTF-8") + "&" +
+                                URLEncoder.encode("user_pass", "UTF-8") + "=" + URLEncoder.encode(login_password, "UTF-8");
+                        bufferedWriter.write(data);
+                        bufferedWriter.flush();
+                        bufferedWriter.close();
+                        outputStream.close();
+
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                        String respons = "";
+                        String line = "";
+                        while ((line = bufferedReader.readLine()) != null) {
+                            respons += line;
+                        }
+                        bufferedReader.close();
+                        inputStream.close();
+                        httpURLConnection.disconnect();
+                        return respons;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (method.equals("uploadData")) {
+                String upload_langitude = params[1];
+                String upload_longtitude = params[2];
+                String upload_accelerometer_data = params[3];
+                String upload_car_speed = params[4];
+                String upload_throttle = params[5];
+                String upload_steering_wheel = params[6];
+                String upload_odometer = params[7];
+
+
+                try {
+                    URL url = new URL(uploadData_url);
+                    try {
+                        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                        httpURLConnection.setRequestMethod("POST");
+                        httpURLConnection.setDoOutput(true);
+                        httpURLConnection.setDoInput(true);
+                        OutputStream outputStream = httpURLConnection.getOutputStream();
+
+                        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                        String data = URLEncoder.encode("langtitude", "UTF-8") + "=" + URLEncoder.encode(upload_langitude, "UTF-8") + "&" +
+                                URLEncoder.encode("longtitude", "UTF-8") + "=" + URLEncoder.encode(upload_longtitude, "UTF-8") + "&" +
+                                URLEncoder.encode("mobile_accelerometer_data", "UTF-8") + "=" + URLEncoder.encode(upload_accelerometer_data, "UTF-8") + "&" +
+                                URLEncoder.encode("OBD_car_speed", "UTF-8") + "=" + URLEncoder.encode(upload_car_speed, "UTF-8") + "&" +
+                                URLEncoder.encode("OBD_throttle", "UTF-8") + "=" + URLEncoder.encode(upload_throttle, "UTF-8") + "&" +
+                                URLEncoder.encode("OBD_sterring_wheel", "UTF-8") + "=" + URLEncoder.encode(upload_steering_wheel, "UTF-8") + "&" +
+                                URLEncoder.encode("OBD_odometer", "UTF-8") + "=" + URLEncoder.encode(upload_odometer, "UTF-8");
+
+
+                        bufferedWriter.write(data);
+                        bufferedWriter.flush();
+                        bufferedWriter.close();
+                        outputStream.close();
+
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                        String respons = "";
+                        String line = "";
+                        while ((line = bufferedReader.readLine()) != null) {
+                            respons += line;
+                        }
+                        bufferedReader.close();
+                        inputStream.close();
+                        httpURLConnection.disconnect();
+                        return respons;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            if (method.equals("getData")) { ///TODO
+                String upload_langitude = params[1];
+                String upload_longtitude = params[2];
+
+                try {
+                    URL url = new URL(getData_url);
+                    try {
+                        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                        httpURLConnection.setRequestMethod("POST");
+                        httpURLConnection.setDoOutput(true);
+                        httpURLConnection.setDoInput(true);
+                        OutputStream outputStream = httpURLConnection.getOutputStream();
+                        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                        String data = URLEncoder.encode("langitude", "UTF-8") + "=" + URLEncoder.encode(upload_langitude, "UTF-8") + "&" +
+                                URLEncoder.encode("longtitude", "UTF-8") + "=" + URLEncoder.encode(upload_longtitude, "UTF-8");
+                        bufferedWriter.write(data);
+                        bufferedWriter.flush();
+                        bufferedWriter.close();
+                        outputStream.close();
+
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                        String respons = "";
+                        String line = "";
+                        while ((line = bufferedReader.readLine()) != null) {
+                            respons += line;
+                        }
+                        bufferedReader.close();
+                        inputStream.close();
+                        httpURLConnection.disconnect();
+                        return respons;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+            if (method.equals("detect_order_info_Set")) {
+                String set_pothole_nr = params[1];
+                String set_user_id = params[2];
+                URL url = null;
+                try {
+                    url = new URL(detect_order_info_set_url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
                     httpURLConnection.setDoInput(true);
                     OutputStream outputStream = httpURLConnection.getOutputStream();
                     BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                    String data = URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(login_name, "UTF-8") + "&" +
-                            URLEncoder.encode("user_pass", "UTF-8") + "=" + URLEncoder.encode(login_password, "UTF-8");
+                    String data = URLEncoder.encode("user", "UTF-8") + "=" + URLEncoder.encode(set_pothole_nr, "UTF-8") + "&" +
+                            URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(set_user_id, "UTF-8");
+                    ;
                     bufferedWriter.write(data);
                     bufferedWriter.flush();
                     bufferedWriter.close();
                     outputStream.close();
-
                     InputStream inputStream = httpURLConnection.getInputStream();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
                     String respons = "";
@@ -116,65 +271,57 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                     httpURLConnection.disconnect();
                     return respons;
 
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return null;
                 }
 
 
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return null;
             }
 
-        }
-        else if (method.equals("Pothole")) {
-            String latitude = params[1];
-            String longitude = params[2];
-            String mobile_accelerometer_data = params[3];
-            String OBD_car_speed = params[4];
-            String OBD_throttle = params[5];
-            String OBD_steering_wheel_pos = params[6];
-            String OBD_odometer = params[7];
-            try {
-                URL url = new URL(login_url);
+            if (method.equals("detect_order_info_Get")) {
+                String upload_pothole_nr = params[1];
+
                 try {
-                    url = new URL(reg_url);
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoInput(true);
-                    OutputStream OS = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
-                    String data = URLEncoder.encode("latitude", "UTF-8") + "=" + URLEncoder.encode(latitude, "UTF-8") + "&" +
-                            URLEncoder.encode("longitude", "UTF-8") + "=" + URLEncoder.encode(longitude, "UTF-8") + "&" +
-                            URLEncoder.encode("mobile_accelerometer_data", "UTF-8") + "=" + URLEncoder.encode(mobile_accelerometer_data, "UTF-8") + "&" +
-                            URLEncoder.encode("OBD_car_speed", "UTF-8") + "=" + URLEncoder.encode(OBD_car_speed, "UTF-8") + "&" +
-                            URLEncoder.encode("OBD_throttle", "UTF-8") + "=" + URLEncoder.encode(OBD_throttle, "UTF-8") + "&" +
-                            URLEncoder.encode("OBD_steering_wheel_pos", "UTF-8") + "=" + URLEncoder.encode(OBD_steering_wheel_pos, "UTF-8") + "&" +
-                            URLEncoder.encode("OBD_odometer", "UTF-8") + "=" + URLEncoder.encode(OBD_odometer, "UTF-8");
-                    bufferedWriter.write(data);
-                    bufferedWriter.flush();
-                    bufferedWriter.close();
-                    OS.close();
-                    InputStream IS = httpURLConnection.getInputStream();
-                    IS.close();
-                    return "Pothole Success...";
+                    URL url = new URL(detect_order_info_Get_url);
+                    try {
+                        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                        httpURLConnection.setRequestMethod("POST");
+                        httpURLConnection.setDoOutput(true);
+                        httpURLConnection.setDoInput(true);
+                        OutputStream outputStream = httpURLConnection.getOutputStream();
+                        BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                        String data = URLEncoder.encode("pothole_nr", "UTF-8") + "=" + URLEncoder.encode(upload_pothole_nr, "UTF-8");
+                        bufferedWriter.write(data);
+                        bufferedWriter.flush();
+                        bufferedWriter.close();
+                        outputStream.close();
 
-                } catch (IOException e) {
+                        InputStream inputStream = httpURLConnection.getInputStream();
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
+                        String respons = "";
+                        String line = "";
+                        while ((line = bufferedReader.readLine()) != null) {
+                            respons += line;
+                        }
+                        bufferedReader.close();
+                        inputStream.close();
+                        httpURLConnection.disconnect();
+                        return respons;
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+
+                } catch (MalformedURLException e) {
                     e.printStackTrace();
-                    return null;
                 }
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return null;
             }
 
         }
-        else{
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -185,8 +332,29 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
     @Override
     protected void onPostExecute(String result) {
         //  super.onPostExecute(aVoid);
-        if (result != null){
-            if (result.equals("Registration Success...")) // viser at registering af data lykkes
+        if (result != null) {
+            switch (result) {
+                case "Data Insertion Succes...":
+
+                    break;
+
+                /*case "Data Insertion Succes...":
+
+                    break;
+
+                case "Data Insertion Succes...":
+
+                    break;
+
+                case "Data Insertion Succes...":
+
+                    break;
+
+                case "Data Insertion Succes...":
+
+                    break;*/
+
+            /*if (result.equals("Registration Success...")) // viser at registering af data lykkes
             {
                 //Functionality.langToast(result);
                 //Register register = new Register();
@@ -211,15 +379,15 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
             else // viser respons fra database
             {
                 System.out.println(result.toString());
-                alertDialog.setMessage("Failed...Please try again!");
+                alertDialog.setMessage(result);
                 alertDialog.show();
+            }*/
             }
-        }
-        else // viser respons fra database
+
+        } else // viser respons fra database
         {
             alertDialog.setMessage("Failed...Please try again!");
             alertDialog.show();
         }
-
     }
 }
