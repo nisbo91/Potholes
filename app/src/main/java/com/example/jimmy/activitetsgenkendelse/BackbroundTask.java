@@ -1,7 +1,9 @@
 package com.example.jimmy.activitetsgenkendelse;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import java.io.BufferedReader;
@@ -344,24 +346,36 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
         if (result != null) {
             switch (result) {
                 case "Data Insertion Succes...":
-
+                    Functionality.langToast("Register confirmed");
+                    ((Activity)ctx).finish();
                     break;
 
-                /*case "Data Insertion Succes...":
-
+                case "Login Success...":
+                    Functionality.langToast(result);
+                    Intent intent = new Intent(ctx, MainActivity.class);
+                    ctx.startActivity(intent);
+                    ((Activity)ctx).finish();
                     break;
 
-                case "Data Insertion Succes...":
-
+                case "Uploading data was a Success...":
+                    Functionality.langToast(result);
                     break;
 
-                case "Data Insertion Succes...":
-
+                case "pothole_nr already found, it's number is :":
+                    Functionality.langToast(result);
                     break;
 
-                case "Data Insertion Succes...":
+                case "Data Insertion Succes":
+                    Functionality.langToast("Pothole detected");
+                    break;
 
-                    break;*/
+                case "Detect_order is number: ":
+                    Functionality.langToast(result);
+                    break;
+                default:
+                    alertDialog.setMessage(result);
+                    alertDialog.show();
+                    break;
 
             /*if (result.equals("Registration Success...")) // viser at registering af data lykkes
             {
