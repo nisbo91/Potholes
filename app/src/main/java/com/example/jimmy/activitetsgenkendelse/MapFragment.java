@@ -155,7 +155,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             return;
         }
         Location location = locationManager.getLastKnownLocation(locationProvider);
-        if (location != null) {
+        try{
             MapFragment.location = location;
             locationAccuracy = location.getAccuracy();
             SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
@@ -173,8 +173,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
             mGoogleMap.animateCamera(zoom);
 
-        } else {
-            System.out.println("location null: " + location);
+        } catch (NullPointerException e){
+            Log.e("error",e.toString());
         }
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
