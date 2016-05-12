@@ -1,11 +1,11 @@
 package com.example.jimmy.activitetsgenkendelse;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.provider.Settings;
 
 
 public class Register extends AppCompatActivity implements View.OnClickListener {
@@ -38,16 +38,31 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bRegister:
-
-                name=etName.getText().toString();
-                user_Name=etUsername.getText().toString();
-                user_Email=etEmail.getText().toString();
-                user_Age=etAge.getText().toString();
-                user_Password=etPassword.getText().toString();
-                user_IMEI = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                String method= "register";
-                BackbroundTask backbroundTask= new BackbroundTask(this); //opretter ny
-                backbroundTask.execute(method, name,user_Name,user_Password,user_Age,user_Email,user_IMEI);
+                if(etUsername.getText().toString().matches(username)){
+                    if(etEmail.getText().toString().matches(emailPattern)){
+                        if(etPassword.getText().toString().matches(password)){
+                            name=etName.getText().toString();
+                            user_Name=etUsername.getText().toString();
+                            user_Email=etEmail.getText().toString();
+                            user_Age=etAge.getText().toString();
+                            user_Password=etPassword.getText().toString();
+                            user_IMEI = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                            String method= "register";
+                            BackbroundTask backbroundTask= new BackbroundTask(this); //opretter ny
+                            backbroundTask.execute(method, name,user_Name,user_Password,user_Age,user_Email,user_IMEI);
+                        }
+                        else{
+                            Functionality.langToast("Password isn't valid\n" +
+                                    "password most contain: 6-20 characters and small and big letters");
+                        }
+                    }
+                    else{
+                        Functionality.langToast("Invalid email");
+                    }
+                }
+                else{
+                    Functionality.langToast("Invalid username \nmust contain 5-15 letters or numbers");
+                }
                 break;
         }
 
