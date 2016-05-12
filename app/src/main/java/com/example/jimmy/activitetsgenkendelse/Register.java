@@ -5,13 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.provider.Settings;
+
 
 public class Register extends AppCompatActivity implements View.OnClickListener {
 
 
     Button bRegister;
     EditText etName, etAge, etUsername, etEmail, etPassword;
-    String name, user_Age, user_Name,user_Email, user_Password;
+    String name, user_Age, user_Name,user_Email, user_Password, user_IMEI;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,9 +41,10 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 user_Email=etEmail.getText().toString();
                 user_Age=etAge.getText().toString();
                 user_Password=etPassword.getText().toString();
+                user_IMEI = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                 String method= "register";
                 BackbroundTask backbroundTask= new BackbroundTask(this); //opretter ny
-                backbroundTask.execute(method, name,user_Name,user_Password,user_Age,user_Email);
+                backbroundTask.execute(method, name,user_Name,user_Password,user_Age,user_Email,user_IMEI);
 
 
                 break;
