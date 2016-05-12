@@ -106,6 +106,17 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         switch (v.getId()) {
             case R.id.addPotholeButton:
                 // TODO: 03-05-2016 add some check for other markers at the position
+                String method = "pothole";
+                String latitude = String.valueOf(location.getLatitude());
+                String longitude = String.valueOf(location.getLongitude());
+                String mobile_accelerometer_data = null;
+                BluetoothData bluetoothData = new BluetoothData();
+                String OBD_car_speed = bluetoothData.speed;
+                String OBD_steering_wheel_pos = bluetoothData.steering;
+                String OBD_throttle = bluetoothData.throttle;
+                String OBD_odometer = "";
+                BackbroundTask backgroundTask = new BackbroundTask(MainActivity.instans);
+                backgroundTask.execute(method,latitude,longitude,mobile_accelerometer_data,OBD_car_speed,OBD_throttle,OBD_steering_wheel_pos,OBD_odometer);
                 circle = mGoogleMap.addCircle(new CircleOptions()
                         .center(new LatLng(location.getLatitude(),location.getLongitude()))
                         .radius(locationAccuracy)
@@ -426,6 +437,17 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
     @Override
     public void onMapClick(LatLng latLng) {
+        String method = "pothole";
+        String latitude = String.valueOf(location.getLatitude());
+        String longitude = String.valueOf(location.getLongitude());
+        String mobile_accelerometer_data = null;
+        BluetoothData bluetoothData = new BluetoothData();
+        String OBD_car_speed = bluetoothData.speed;
+        String OBD_steering_wheel_pos = bluetoothData.steering;
+        String OBD_throttle = bluetoothData.throttle;
+        String OBD_odometer = "";
+        BackbroundTask backgroundTask = new BackbroundTask(MainActivity.instans);
+        backgroundTask.execute(method,latitude,longitude,mobile_accelerometer_data,OBD_car_speed,OBD_throttle,OBD_steering_wheel_pos,OBD_odometer);
         circle = mGoogleMap.addCircle(new CircleOptions()
                 .center(new LatLng(latLng.latitude,latLng.longitude))
                 .radius(locationAccuracy)
