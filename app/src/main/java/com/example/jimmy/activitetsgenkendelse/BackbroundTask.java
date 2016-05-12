@@ -54,6 +54,8 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
             String user_name = params[2];
             String user_password = params[3];
             String age = params[4];
+            String email=params[5];
+            String IMEI= params[6];
             URL url = null;
             try {
                 url = new URL(reg_url);
@@ -65,7 +67,9 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                 String data = URLEncoder.encode("user", "UTF-8") + "=" + URLEncoder.encode(name, "UTF-8") + "&" +
                         URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(user_name, "UTF-8") + "&" +
                         URLEncoder.encode("user_password", "UTF-8") + "=" + URLEncoder.encode(user_password, "UTF-8") + "&" +
-                        URLEncoder.encode("age", "UTF-8") + "=" + URLEncoder.encode(age, "UTF-8");
+                        URLEncoder.encode("age", "UTF-8") + "=" + URLEncoder.encode(age, "UTF-8")+ "&" +
+                        URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8") + "&" +
+                        URLEncoder.encode("IMEI_number", "UTF-8") + "=" + URLEncoder.encode(IMEI, "UTF-8");
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
                 bufferedWriter.close();
