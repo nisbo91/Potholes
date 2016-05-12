@@ -39,7 +39,6 @@ public class PhBluetoothManager {
     boolean dataFound;
     String lookUpValue = "\n412";
     Integer lookUpPlace = 0;
-    //Integer restartCounter = 0;
 
     BluetoothData btd = new BluetoothData();
 
@@ -250,7 +249,6 @@ public class PhBluetoothManager {
      * listen to the inputsocket
      */
     private void beginListenForData() {
-        //final Handler handler = new Handler();
         final byte delimiter = 13;              //This is the ASCII code for carriage return
 
         stopWorker = false;

@@ -39,8 +39,6 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
         bluetooth = new PhBluetoothManager(getApplicationContext());
         Log.i("bluetooth","bluetooth: "+bluetooth);
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -56,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
 
         instans = this;
 
-        // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)

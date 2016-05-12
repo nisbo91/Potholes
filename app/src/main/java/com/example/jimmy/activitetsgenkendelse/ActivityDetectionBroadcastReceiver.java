@@ -22,19 +22,9 @@ public class ActivityDetectionBroadcastReceiver extends BroadcastReceiver {
         if (ActivityRecognitionResult.hasResult(intent)) {
 
             ActivityRecognitionResult res = ActivityRecognitionResult.extractResult(intent);
-
-            //DetectedActivity akt = res.getMostProbableActivity();
-            //String aktivitetsnavn = getBeskrivelse(akt.getType());
-
-            //String tekst = aktivitetsnavn+" med "+ akt.getConfidence() +" procents sandsynlighed";
-            //TekstTilTale.instans(context).tal(tekst);
-
             if (MainActivity.instans != null) {
-                //MainActivity.instans.DetectedActivity.append("\n" + new Date() + "\n");
                 for (DetectedActivity a : res.getProbableActivities()) {
                     String log = a.getType() + " " + getBeskrivelse(a.getType()) + " " + +a.getConfidence() + "%\n";
-                    //MainActivity.instans.DetectedActivity.append(log);
-                    //Functionality.langToast("\n" + new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
                     System.out.println(new Date() + "\n"+getBeskrivelse(res.getMostProbableActivity().getType())+", "+a.getConfidence()+"%");
                 }
             }

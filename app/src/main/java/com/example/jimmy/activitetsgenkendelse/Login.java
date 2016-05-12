@@ -45,7 +45,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 String method = "login";
                 BackbroundTask backgroundTask = new BackbroundTask(this);
                 backgroundTask.execute(method,user_Name,user_Password);
-                //startActivity(new Intent(this,MainActivity.class)); // skal slettes i endelige udgave.
                 break;
         }
     }

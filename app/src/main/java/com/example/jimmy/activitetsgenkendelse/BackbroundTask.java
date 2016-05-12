@@ -39,16 +39,6 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected String doInBackground(String... params) {
-        //IP når der simuleres på simu mobil Wampserver
-        //      String reg_url = "http://10.0.2.2/potholeappdb/register.php";
-        //      String login_url = "http://10.0.2.2/potholeappdb/login.php";
-        // IP udefra
-        //  String reg_url = "http://80.62.116.149/potholeappdb/register.php";
-        //  String login_url = "http://80.62.116.149/potholeappdb/login.php";
-        // IP lokalt
-        //  String reg_url = "http://192.168.0.201/potholeappdb/register.php";
-        //   String login_url = "http://192.168.0.201/potholeappdb/login.php";
-        //IP der bruges Jespers Lamp server fra app
         String reg_url = "http://87.72.39.104/potholeappdb/register.php";
         String login_url = "http://87.72.39.104/potholeappdb/login.php";
         String uploadData_url = "http://87.72.39.104/potholeappdb/uploadData.php";
@@ -345,7 +335,6 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
     @Override
     protected void onPostExecute(String result) {
-        //  super.onPostExecute(aVoid);
         try{
             switch (result) {
                 case "Data Insertion Succes...":
@@ -379,35 +368,6 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                     alertDialog.setMessage(result);
                     alertDialog.show();
                     break;
-
-            /*if (result.equals("Registration Success...")) // viser at registering af data lykkes
-            {
-                //Functionality.langToast(result);
-                //Register register = new Register();
-                //register.processValue(result);
-                ((Activity)ctx).finish();
-
-            }
-            if (result.equals("Login Success...")) // viser at registering af data lykkes
-            {
-                //Functionality.langToast(result);
-                Intent intent = new Intent(ctx, MainActivity.class);
-                ctx.startActivity(intent);
-                ((Activity)ctx).finish();
-            }
-            if (result.equals("Pothole Success...")) // viser at registering af data lykkes
-            {
-                Functionality.langToast(result);
-                //Register register = new Register();
-                //register.processValue(result);
-
-            }
-            else // viser respons fra database
-            {
-                System.out.println(result.toString());
-                alertDialog.setMessage(result);
-                alertDialog.show();
-            }*/
             }
         }
         catch (Exception e){

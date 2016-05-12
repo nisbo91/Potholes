@@ -67,35 +67,5 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         }
 
     }
-    /*public void processValue(String result)
-    {
-        //handle value
-        System.out.println(result.toString());
-        //Update GUI, show toast, etc..
-        Functionality.langToast("Registration Success");
-        finish();
-    }
-/*
-public void userReg(View View)
-{
-    name=etName.getText().toString();
-    user_Name=etUsername.getText().toString();
-    user_Password=etPassword.getText().toString();
-    user_Age=etAge.getText().toString();
-    String method= "register";
-    BackbroundTask backbroundTask= new BackbroundTask(this); //opretter ny
-    backbroundTask.execute(method, name,user_Name,user_Password,user_Age);
-    finish();
-
-}
-*/
-    /*public void userLogin(View view)
-    {
-        user_Name = etUsername.getText().toString();
-        user_Password = etPassword.getText().toString();
-        String method = "login";
-        BackbroundTask backgroundTask = new BackbroundTask(this);
-        backgroundTask.execute(method,user_Name,user_Password);
-    }*/
 
 }

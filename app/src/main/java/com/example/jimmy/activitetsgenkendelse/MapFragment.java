@@ -164,9 +164,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             MapFragment.location = location;
             locationAccuracy = location.getAccuracy();
             SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
-            //System.out.println(locationProvider);
-            //System.out.println(location);
-            //initialize the location
 
             // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
             MapsInitializer.initialize(getActivity());
@@ -235,8 +232,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 location = locationManager.getLastKnownLocation(locationProvider);
                 locationAccuracy = location.getAccuracy();
                 SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
-                // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
-                //MapsInitializer.initialize(getActivity());
 
                 //when the location changes, update the map by zooming to the location
                 CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
@@ -244,8 +239,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
                 mGoogleMap.animateCamera(zoom);
-                //System.out.println(MostProbableActivity.getType());
-                //System.out.println(MostProbableActivity.IN_VEHICLE);
+
                 try{
                     if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE){ //||MostProbableActivity.getType() == MostProbableActivity.STILL){
                         dataAccelometer = accelometer.returnData();
@@ -349,7 +343,6 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
     public boolean detectedPothole(ArrayList data) {
         int count = data.size();
-        //System.out.println("detected:  " + data);
         int i;
         boolean pothole = false;
         double yaxis;
@@ -360,29 +353,20 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         for (i = 0; i < count - 1; i++) {
             if(yaxis==0){
                 String alldata = (String) data.get(i);
-                //System.out.println("alldata:  "+alldata);
                 String[] split = alldata.split(",");
-                //System.out.println("split:  "+ Arrays.toString(split));
                 yaxis = Double.parseDouble(split[1]);
-                //System.out.println(yaxis);
                 timestamp = Long.parseLong(split[3]);
             }
             else{
                 double oldyAxis = yaxis;
                 String alldata = (String) data.get(i);
-                //System.out.println("alldata:  "+alldata);
                 String[] split = alldata.split(",");
-                //System.out.println("split:  "+ Arrays.toString(split));
                 yaxis = Double.parseDouble(split[1]);
-                //System.out.println("yaxis:  "+yaxis);
-                //System.out.println("old:  "+oldyAxis);
-                //System.out.println((abs(yaxis))-(abs(oldyAxis)));
                 timestamp = Long.parseLong(split[3]);
                 if (abs(yaxis)-(abs(oldyAxis))>valueChange){
                     System.out.println(" ");
                     System.out.println("pothole detected");
                     System.out.println(" ");
-                    //Functionality.langToast("Pothole detected");
                     String method = "uploadData";
                     String latitude = String.valueOf(location.getLatitude());
                     String longitude = String.valueOf(location.getLongitude());
