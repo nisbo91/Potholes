@@ -438,8 +438,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     @Override
     public void onMapClick(LatLng latLng) {
         String method = "pothole";
-        String latitude = String.valueOf(location.getLatitude());
-        String longitude = String.valueOf(location.getLongitude());
+        String latitude = String.valueOf(latLng.latitude);
+        String longitude = String.valueOf(latLng.longitude);
         String mobile_accelerometer_data = null;
         BluetoothData bluetoothData = new BluetoothData();
         String OBD_car_speed = bluetoothData.speed;
