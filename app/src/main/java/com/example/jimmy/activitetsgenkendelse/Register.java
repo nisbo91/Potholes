@@ -10,6 +10,9 @@ import android.provider.Settings;
 
 public class Register extends AppCompatActivity implements View.OnClickListener {
 
+    String emailPattern = "[a-zA-Z0-9._-]+@[a-zA-Z]+\\.+[a-z]+";
+    String username = "[a-zA-Z0-9]{5,15}$";
+    String password = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{6,20})";
 
     Button bRegister;
     EditText etName, etAge, etUsername, etEmail, etPassword;

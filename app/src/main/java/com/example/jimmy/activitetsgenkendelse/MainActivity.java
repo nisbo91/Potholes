@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
         Log.i("bluetooth","bluetooth: "+bluetooth);
         preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-        iMEI = preferences.getString("iMEI", null);
+        iMEI = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         carModel = preferences.getString("carModel", null);
         potholeAlert = preferences.getBoolean("potholeAlert", false);
         alertRadius = preferences.getString("alertRadius", null);

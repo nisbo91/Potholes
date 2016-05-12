@@ -6,20 +6,19 @@
     tools:context="com.example.jimmy.activitetsgenkendelse.SettingsFragment"
     android:weightSum="1">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textSize="18dp"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
-        android:text="IMEI: Unkwown"
+        android:text="IMEI: Unknown"
         android:id="@+id/IMEITextView"/>
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textSize="18dp"
-        android:text="Car model: Unkwown"
+        android:text="Car model: Unknown"
         android:textColor="@color/common_google_signin_btn_text_dark_default"
         android:id="@+id/carModelTextView" />
 
@@ -54,7 +53,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
             android:textSize="18dp"
-            android:text="Unkwown Km"
+            android:text="Unknown Km"
             android:id="@+id/kmTextView" />
 
 

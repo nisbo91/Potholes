@@ -84,26 +84,6 @@ public class PhBluetoothManager {
         } else {
             // TODO: 10-04-2016 test if bluetooth is enabled
             if (!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-
-                // TODO: 10-04-2016 ask user to turn on bluetooth
-                /*android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context,android.R.style.Theme_Material_Light_Dialog_Alert );
-                //AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.myDialog);
-                builder.setTitle("Bluetooth not enabled.");
-                builder.setPositiveButton("Enable", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(context, "Turning On Bluetooth", Toast.LENGTH_SHORT).show();
-                        turnOnBluetooth();
-                    }
-                });
-                builder.setNegativeButton("Close App", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(context, "Closing....", Toast.LENGTH_SHORT).show();
-                        closeApp();
-                    }
-                });
-                builder.create().show();*/
                 Functionality.langToast("Bluetooth disabled....\nPlease enable bluetooth in settings");
             } else {
                 // TODO: 10-04-2016 make connection

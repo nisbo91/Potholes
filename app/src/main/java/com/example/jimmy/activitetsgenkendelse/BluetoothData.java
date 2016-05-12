@@ -5,12 +5,12 @@ package com.example.jimmy.activitetsgenkendelse;
  */
 public class BluetoothData {
 
-    public String speed;
-    public String speedTs;
-    public String steering;
-    public String steeringTs;
-    public String throttle;
-    public String throttleTs;
+    public String speed = "";
+    public String speedTs = "";
+    public String steering = "";
+    public String steeringTs = "";
+    public String throttle = "";
+    public String throttleTs = "";
 
     void setSpeed(String d) {
         Long tsLong = System.currentTimeMillis() / 1000;

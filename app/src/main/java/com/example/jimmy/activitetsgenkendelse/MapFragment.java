@@ -106,22 +106,27 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         switch (v.getId()) {
             case R.id.addPotholeButton:
                 // TODO: 03-05-2016 add some check for other markers at the position
-                String method = "pothole";
-                String latitude = String.valueOf(location.getLatitude());
-                String longitude = String.valueOf(location.getLongitude());
-                String mobile_accelerometer_data = null;
-                BluetoothData bluetoothData = new BluetoothData();
-                String OBD_car_speed = bluetoothData.speed;
-                String OBD_steering_wheel_pos = bluetoothData.steering;
-                String OBD_throttle = bluetoothData.throttle;
-                String OBD_odometer = "";
-                BackbroundTask backgroundTask = new BackbroundTask(MainActivity.instans);
-                backgroundTask.execute(method,latitude,longitude,mobile_accelerometer_data,OBD_car_speed,OBD_throttle,OBD_steering_wheel_pos,OBD_odometer);
-                circle = mGoogleMap.addCircle(new CircleOptions()
-                        .center(new LatLng(location.getLatitude(),location.getLongitude()))
-                        .radius(locationAccuracy)
-                        .strokeColor(Color.parseColor("#500084d3"))
-                        .fillColor(Color.parseColor("#500084d3")));
+                try {
+                    String method = "uploadData";
+                    String latitude = String.valueOf(location.getLatitude());
+                    String longitude = String.valueOf(location.getLongitude());
+                    String mobile_accelerometer_data = "";
+                    BluetoothData bluetoothData = new BluetoothData();
+                    String OBD_car_speed = bluetoothData.speed;
+                    String OBD_steering_wheel_pos = bluetoothData.steering;
+                    String OBD_throttle = bluetoothData.throttle;
+                    String OBD_odometer = "";
+                    BackbroundTask backgroundTask = new BackbroundTask(MainActivity.instans);
+                    backgroundTask.execute(method, latitude, longitude, mobile_accelerometer_data, OBD_car_speed, OBD_throttle, OBD_steering_wheel_pos, OBD_odometer);
+                    circle = mGoogleMap.addCircle(new CircleOptions()
+                            .center(new LatLng(location.getLatitude(), location.getLongitude()))
+                            .radius(locationAccuracy)
+                            .strokeColor(Color.parseColor("#500084d3"))
+                            .fillColor(Color.parseColor("#500084d3")));
+                }catch (NullPointerException e){
+                    Log.e("error",e.toString());
+                    Functionality.langToast("Position not found");
+                }
                 break;
             case R.id.settingsButton:
                 android.support.v4.app.FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -378,7 +383,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                     System.out.println("pothole detected");
                     System.out.println(" ");
                     //Functionality.langToast("Pothole detected");
-                    String method = "pothole";
+                    String method = "uploadData";
                     String latitude = String.valueOf(location.getLatitude());
                     String longitude = String.valueOf(location.getLongitude());
                     String mobile_accelerometer_data = String.valueOf(yaxis);
@@ -435,10 +440,11 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
 
     @Override
     public void onMapClick(LatLng latLng) {
-        String method = "pothole";
+        String method = "uploadData";
         String latitude = String.valueOf(latLng.latitude);
         String longitude = String.valueOf(latLng.longitude);
-        String mobile_accelerometer_data = null;
+        Functionality.langToast(latLng.latitude + ", "+latLng.longitude);
+        String mobile_accelerometer_data = "";
         BluetoothData bluetoothData = new BluetoothData();
         String OBD_car_speed = bluetoothData.speed;
         String OBD_steering_wheel_pos = bluetoothData.steering;
