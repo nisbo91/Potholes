@@ -168,8 +168,8 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                         OutputStream outputStream = httpURLConnection.getOutputStream();
 
                         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                        String data = URLEncoder.encode("langtitude", "UTF-8") + "=" + URLEncoder.encode(upload_langitude, "UTF-8") + "&" +
-                                URLEncoder.encode("longtitude", "UTF-8") + "=" + URLEncoder.encode(upload_longtitude, "UTF-8") + "&" +
+                        String data = URLEncoder.encode("latitude", "UTF-8") + "=" + URLEncoder.encode(upload_langitude, "UTF-8") + "&" +
+                                URLEncoder.encode("longitude", "UTF-8") + "=" + URLEncoder.encode(upload_longtitude, "UTF-8") + "&" +
                                 URLEncoder.encode("mobile_accelerometer_data", "UTF-8") + "=" + URLEncoder.encode(upload_accelerometer_data, "UTF-8") + "&" +
                                 URLEncoder.encode("OBD_car_speed", "UTF-8") + "=" + URLEncoder.encode(upload_car_speed, "UTF-8") + "&" +
                                 URLEncoder.encode("OBD_throttle", "UTF-8") + "=" + URLEncoder.encode(upload_throttle, "UTF-8") + "&" +
@@ -220,8 +220,8 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                         httpURLConnection.setDoInput(true);
                         OutputStream outputStream = httpURLConnection.getOutputStream();
                         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                        String data = URLEncoder.encode("langitude", "UTF-8") + "=" + URLEncoder.encode(upload_langitude, "UTF-8") + "&" +
-                                URLEncoder.encode("longtitude", "UTF-8") + "=" + URLEncoder.encode(upload_longtitude, "UTF-8");
+                        String data = URLEncoder.encode("latitude", "UTF-8") + "=" + URLEncoder.encode(upload_langitude, "UTF-8") + "&" +
+                                URLEncoder.encode("longitude", "UTF-8") + "=" + URLEncoder.encode(upload_longtitude, "UTF-8");
                         bufferedWriter.write(data);
                         bufferedWriter.flush();
                         bufferedWriter.close();
