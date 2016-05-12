@@ -76,7 +76,6 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                         URLEncoder.encode("user_password", "UTF-8") + "=" + URLEncoder.encode(user_password, "UTF-8") + "&" +
                         URLEncoder.encode("age", "UTF-8") + "=" + URLEncoder.encode(age, "UTF-8")+ "&" +
                         URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
-                ;
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
                 bufferedWriter.close();
@@ -95,11 +94,12 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                 return respons;
             } catch (MalformedURLException e) {
                 e.printStackTrace();
+                return null;
             } catch (IOException e) {
                 e.printStackTrace();
+                return null;
             }
-
-        } else {
+        }
             if (method.equals("login")) {
                 String login_name = params[1];
                 String login_password = params[2];
@@ -133,11 +133,13 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
                     } catch (IOException e) {
                         e.printStackTrace();
+                        return null;
                     }
 
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    return null;
                 }
             }
 
@@ -189,11 +191,13 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
                     } catch (IOException e) {
                         e.printStackTrace();
+                        return null;
                     }
 
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    return null;
                 }
             }
 
@@ -232,11 +236,13 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
                     } catch (IOException e) {
                         e.printStackTrace();
+                        return null;
                     }
 
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    return null;
                 }
             }
 
@@ -273,8 +279,10 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    return null;
                 } catch (IOException e) {
                     e.printStackTrace();
+                    return null;
                 }
 
 
@@ -312,16 +320,17 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
                     } catch (IOException e) {
                         e.printStackTrace();
+                        return null;
                     }
 
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
+                    return null;
                 }
+            }else{
+                return null;
             }
-
-        }
-        return null;
     }
 
     @Override
