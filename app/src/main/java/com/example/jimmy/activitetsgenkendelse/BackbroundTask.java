@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -65,6 +66,7 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
             String user_password = params[3];
             String age = params[4];
             String email =params[5];
+            String IMEI_number =params[6];
             URL url = null;
             try {
                 url = new URL(reg_url);
@@ -77,7 +79,8 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                         URLEncoder.encode("user_name", "UTF-8") + "=" + URLEncoder.encode(user_name, "UTF-8") + "&" +
                         URLEncoder.encode("user_password", "UTF-8") + "=" + URLEncoder.encode(user_password, "UTF-8") + "&" +
                         URLEncoder.encode("age", "UTF-8") + "=" + URLEncoder.encode(age, "UTF-8")+ "&" +
-                        URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8");
+                        URLEncoder.encode("email", "UTF-8") + "=" + URLEncoder.encode(email, "UTF-8")+ "&" +
+                        URLEncoder.encode("IMEI_number", "UTF-8") + "=" + URLEncoder.encode(IMEI_number, "UTF-8");
                 bufferedWriter.write(data);
                 bufferedWriter.flush();
                 bufferedWriter.close();
@@ -343,7 +346,7 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
     @Override
     protected void onPostExecute(String result) {
         //  super.onPostExecute(aVoid);
-        if (result != null) {
+        try{
             switch (result) {
                 case "Data Insertion Succes...":
                     Functionality.langToast("Register confirmed");
@@ -406,11 +409,9 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                 alertDialog.show();
             }*/
             }
-
-        } else // viser respons fra database
-        {
-            alertDialog.setMessage("Failed...Please try again!");
-            alertDialog.show();
+        }
+        catch (Exception e){
+            Log.e("error",e.toString());
         }
     }
 }

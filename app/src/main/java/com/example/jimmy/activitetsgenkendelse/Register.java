@@ -45,10 +45,7 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
                 String method= "register";
                 BackbroundTask backbroundTask= new BackbroundTask(this); //opretter ny
                 backbroundTask.execute(method, name,user_Name,user_Password,user_Age,user_Email,user_IMEI);
-
-
                 break;
-
         }
 
     }
