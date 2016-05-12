@@ -110,7 +110,7 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                     bufferedReader.close();
                     inputStream.close();
                     httpURLConnection.disconnect();
-                    return "Login Success...";
+                    return respons;
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -135,12 +135,12 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
             try {
                 URL url = new URL(login_url);
                 try {
+                    url = new URL(reg_url);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setDoOutput(true);
                     httpURLConnection.setDoInput(true);
-                    OutputStream outputStream = httpURLConnection.getOutputStream();
-                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+                    OutputStream OS = httpURLConnection.getOutputStream();
+                    BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
                     String data = URLEncoder.encode("latitude", "UTF-8") + "=" + URLEncoder.encode(latitude, "UTF-8") + "&" +
                             URLEncoder.encode("longitude", "UTF-8") + "=" + URLEncoder.encode(longitude, "UTF-8") + "&" +
                             URLEncoder.encode("mobile_accelerometer_data", "UTF-8") + "=" + URLEncoder.encode(mobile_accelerometer_data, "UTF-8") + "&" +
@@ -151,18 +151,9 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                     bufferedWriter.write(data);
                     bufferedWriter.flush();
                     bufferedWriter.close();
-                    outputStream.close();
-
-                    InputStream inputStream = httpURLConnection.getInputStream();
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, "iso-8859-1"));
-                    String respons = "";
-                    String line = "";
-                    while ((line = bufferedReader.readLine()) != null) {
-                        respons += line;
-                    }
-                    bufferedReader.close();
-                    inputStream.close();
-                    httpURLConnection.disconnect();
+                    OS.close();
+                    InputStream IS = httpURLConnection.getInputStream();
+                    IS.close();
                     return "Pothole Success...";
 
                 } catch (IOException e) {
@@ -215,7 +206,8 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
             }
             else // viser respons fra database
             {
-                alertDialog.setMessage(result);
+                System.out.println(result.toString());
+                alertDialog.setMessage("Failed...Please try again!");
                 alertDialog.show();
             }
         }
