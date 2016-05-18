@@ -17,6 +17,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 /**
@@ -198,8 +199,8 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
 
 
             if (method.equals("getData")) { ///TODO
-                String upload_langitude = params[1];
-                String upload_longtitude = params[2];
+                //String upload_langitude = params[1];
+                //String upload_longtitude = params[2];
 
                 try {
                     URL url = new URL(getData_url);
@@ -210,8 +211,8 @@ public class BackbroundTask extends AsyncTask<String,Void,String> {
                         httpURLConnection.setDoInput(true);
                         OutputStream outputStream = httpURLConnection.getOutputStream();
                         BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
-                        String data = URLEncoder.encode("latitude", "UTF-8") + "=" + URLEncoder.encode(upload_langitude, "UTF-8") + "&" +
-                                URLEncoder.encode("longitude", "UTF-8") + "=" + URLEncoder.encode(upload_longtitude, "UTF-8");
+                        String data = URLDecoder.decode("latitude", "UTF-8") + "&" +
+                                URLDecoder.decode("longitude", "UTF-8");
                         bufferedWriter.write(data);
                         bufferedWriter.flush();
                         bufferedWriter.close();

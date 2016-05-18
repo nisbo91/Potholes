@@ -40,7 +40,6 @@ import java.util.List;
 import static com.example.jimmy.activitetsgenkendelse.R.color.green;
 import static com.example.jimmy.activitetsgenkendelse.R.color.red;
 import static com.example.jimmy.activitetsgenkendelse.R.color.yellow;
-import static java.lang.Math.abs;
 
 /**
  * Created by Jimmy on 10-04-2016.
@@ -139,6 +138,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setAllGesturesEnabled(true);
         mGoogleMap.setOnMapClickListener(this);
 
@@ -160,7 +160,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             return;
         }
         Location location = locationManager.getLastKnownLocation(locationProvider);
-        try{
+        if (location != null) {
             MapFragment.location = location;
             locationAccuracy = location.getAccuracy();
             SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
@@ -175,112 +175,119 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
             mGoogleMap.animateCamera(zoom);
 
-        } catch (NullPointerException e){
-            Log.e("error",e.toString());
         }
-        // Register the listener with the Location Manager to receive location updates
-        locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
-    }
+        else{
+            System.out.println("location null: "+location);
+        }
 
+        //BackbroundTask backbroundTask= new BackbroundTask(getActivity()); //opretter ny
+        //String method = "getData";
+        //backbroundTask.execute(method);
         // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
+            LocationListener locationListener = new LocationListener() {
 
-            @Override
-            public void onLocationChanged(Location location) {
-                Log.i("called", "onLocationChanged");
-                MapFragment.location = location;
-                float[] distance = new float[10];
-                if (circle!= null){
-                    Location.distanceBetween(location.getLatitude(),location.getLongitude(),circle.getCenter().latitude,circle.getCenter().longitude,distance);
+                @Override
+                public void onLocationChanged(Location location) {
+                    Log.i("called", "onLocationChanged");
+                    MapFragment.location = location;
+                    float[] distance = new float[10];
+                    if (circle!= null){
+                        Location.distanceBetween(location.getLatitude(),location.getLongitude(),circle.getCenter().latitude,circle.getCenter().longitude,distance);
 
-                    if( distance[0] > circle.getRadius() ){
-                        System.out.println("udenfor ");
-                        soundplayed = false;
-                    } else {
-                        System.out.println("indenfor ");
-                        if (soundplayed == false){
-                            checkAlert();
-                            soundplayed = true;
-                        }
-                    }
-                }
-                else{
-                    System.out.println("no circles");
-                }
-
-
-                //define the location manager criteria
-                Criteria criteria = new Criteria();
-
-                locationProvider = locationManager.getBestProvider(criteria, false);
-                try{
-                    if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return;
-                    }
-                }
-                catch (Exception e){
-                    Log.e("error", String.valueOf(e));
-                }
-
-                location = locationManager.getLastKnownLocation(locationProvider);
-                locationAccuracy = location.getAccuracy();
-                SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
-
-                //when the location changes, update the map by zooming to the location
-                CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
-                mGoogleMap.moveCamera(center);
-
-                CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
-                mGoogleMap.animateCamera(zoom);
-
-                try{
-                    if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE){ //||MostProbableActivity.getType() == MostProbableActivity.STILL){
-                        dataAccelometer = accelometer.returnData();
-                        boolean pothole=detectedPothole(dataAccelometer);
-                        accelometer.clearData();
-                        if(pothole== true){
-                            // send data to database (pothole, potholetimestamp, location, accuracy, Car speed, Car Stering, car throttle)
-                            circle = mGoogleMap.addCircle(new CircleOptions()
-                                    .center(new LatLng(location.getLatitude(),location.getLongitude()))
-                                    .radius(locationAccuracy)
-                                    .strokeColor(Color.parseColor("#500084d3"))
-                                    .fillColor(Color.parseColor("#500084d3")));
-                        }
-                        else{
-
+                        if( distance[0] > circle.getRadius() ){
+                            System.out.println("udenfor ");
+                            soundplayed = false;
+                        } else {
+                            System.out.println("indenfor ");
+                            if (soundplayed == false){
+                                checkAlert();
+                                soundplayed = true;
+                            }
                         }
                     }
                     else{
-                        accelometer.clearData();
+                        System.out.println("no circles");
+                    }
+
+
+                    //define the location manager criteria
+                    Criteria criteria = new Criteria();
+
+                    locationProvider = locationManager.getBestProvider(criteria, false);
+                    try{
+                        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            return;
+                        }
+                    }
+                    catch (Exception e){
+                        Log.e("error", String.valueOf(e));
+                    }
+
+                    location = locationManager.getLastKnownLocation(locationProvider);
+                    locationAccuracy = location.getAccuracy();
+                    SetAccuracyIndicator(locationAccuracy, accelometerAccuracyIndicator);
+
+                    //when the location changes, update the map by zooming to the location
+                    CameraUpdate center = CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude()));
+                    mGoogleMap.moveCamera(center);
+
+                    CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
+                    mGoogleMap.animateCamera(zoom);
+
+                    try{
+                        if (MostProbableActivity.getType() == MostProbableActivity.IN_VEHICLE){ //||MostProbableActivity.getType() == MostProbableActivity.STILL){
+                            System.out.println("in vehicle");
+                            dataAccelometer = accelometer.returnData();
+                            boolean pothole=detectedPothole(dataAccelometer);
+                            accelometer.clearData();
+                            if(pothole== true){
+                                // send data to database (pothole, potholetimestamp, location, accuracy, Car speed, Car Stering, car throttle)
+                                circle = mGoogleMap.addCircle(new CircleOptions()
+                                        .center(new LatLng(location.getLatitude(),location.getLongitude()))
+                                        .radius(locationAccuracy)
+                                        .strokeColor(Color.parseColor("#500084d3"))
+                                        .fillColor(Color.parseColor("#500084d3")));
+                            }
+                            else{
+
+                            }
+                        }
+                        else{
+                            accelometer.clearData();
+                        }
+                    }
+                    catch(Exception e){
+                        Log.e("error", String.valueOf(e));
                     }
                 }
-                catch(Exception e){
-                    Log.e("error", String.valueOf(e));
+
+                @Override
+                public void onStatusChanged(String provider, int status, Bundle extras) {
+
                 }
-            }
 
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
+                @Override
+                public void onProviderEnabled(String provider) {
 
-            }
+                }
 
-            @Override
-            public void onProviderEnabled(String provider) {
+                @Override
+                public void onProviderDisabled(String provider) {
 
-            }
+                }
+            };
+            // Register the listener with the Location Manager to receive location updates
+            locationManager.requestLocationUpdates(locationProvider, 0, 0, locationListener);
+    }
 
-            @Override
-            public void onProviderDisabled(String provider) {
 
-            }
-        };
 
     private void checkAlert() {
         Boolean check = fragmentCommunication.getDataCheck();
@@ -345,10 +352,12 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         int count = data.size();
         int i;
         boolean pothole = false;
-        double yaxis;
-        long timestamp;
-        int valueChange = 1;
-        yaxis = 0;
+        double yaxis=0;
+        double oldyAxis=0;
+        long timestamp = 0;
+        long oldtimestamp = 0;
+        double valueChange = 5;
+        double valueChange2 = -5;
 
         for (i = 0; i < count - 1; i++) {
             if(yaxis==0){
@@ -358,12 +367,21 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
                 timestamp = Long.parseLong(split[3]);
             }
             else{
-                double oldyAxis = yaxis;
+                double oldoldyAxis = oldyAxis;
+                oldyAxis = yaxis;
+                double oldoldtimestamp = oldtimestamp;
+                oldtimestamp = timestamp;
                 String alldata = (String) data.get(i);
                 String[] split = alldata.split(",");
                 yaxis = Double.parseDouble(split[1]);
                 timestamp = Long.parseLong(split[3]);
-                if (abs(yaxis)-(abs(oldyAxis))>valueChange){
+                double slope = (yaxis-oldyAxis) / ((timestamp-oldtimestamp)/1000);
+                double slope2 = (oldyAxis-oldoldyAxis) / ((oldtimestamp-oldoldtimestamp)/1000);
+                Log.d("yaxis", String.valueOf(yaxis-oldyAxis));
+                Log.d("time", String.valueOf(timestamp-oldtimestamp));
+                Log.d("slope", String.valueOf((yaxis-oldyAxis) / ((timestamp-oldtimestamp)/1000)));
+                Log.d("slope2", String.valueOf((oldyAxis-oldoldyAxis) / ((oldtimestamp-oldoldtimestamp)/1000)));
+                if (slope>valueChange && slope2 < valueChange2  /*abs(yaxis-oldyAxis)>valueChange && abs(oldyAxis-oldoldyAxis)>valueChange*/){
                     System.out.println(" ");
                     System.out.println("pothole detected");
                     System.out.println(" ");

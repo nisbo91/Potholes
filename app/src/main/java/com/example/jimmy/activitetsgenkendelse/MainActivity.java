@@ -48,18 +48,18 @@ public class MainActivity extends AppCompatActivity implements ResultCallback<St
         potholeAlert = preferences.getBoolean("potholeAlert", false);
         alertRadius = preferences.getString("alertRadius", null);
 
-        if (savedInstanceState == null){
-            getSupportFragmentManager().beginTransaction().add(R.id.Startfragment, new MapFragment()).commit();
-        }
-
-        instans = this;
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(ActivityRecognition.API)
                 .addApi(AppIndex.API).build();
         mGoogleApiClient.connect();
+
+        if (savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction().add(R.id.Startfragment, new MapFragment()).commit();
+        }
+
+        instans = this;
 
         mBroadcastReceiver = new ActivityDetectionBroadcastReceiver();
         settingsFragment = new SettingsFragment();
