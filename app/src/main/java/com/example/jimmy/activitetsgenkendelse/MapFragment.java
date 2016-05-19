@@ -138,6 +138,7 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
         mGoogleMap.setMyLocationEnabled(true);
         mGoogleMap.getUiSettings().setAllGesturesEnabled(true);
         mGoogleMap.setOnMapClickListener(this);
@@ -356,8 +357,8 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
         double oldyAxis=0;
         long timestamp = 0;
         long oldtimestamp = 0;
-        double valueChange = 5;
-        double valueChange2 = -5;
+        double valueChange = 0.0025;
+        double valueChange2 = -0.0025;
 
         for (i = 0; i < count - 1; i++) {
             if(yaxis==0){
@@ -368,19 +369,19 @@ public class MapFragment extends Fragment implements View.OnClickListener, OnMap
             }
             else{
                 double oldoldyAxis = oldyAxis;
+                long oldoldtimestamp = oldtimestamp;
                 oldyAxis = yaxis;
-                double oldoldtimestamp = oldtimestamp;
                 oldtimestamp = timestamp;
                 String alldata = (String) data.get(i);
                 String[] split = alldata.split(",");
                 yaxis = Double.parseDouble(split[1]);
                 timestamp = Long.parseLong(split[3]);
-                double slope = (yaxis-oldyAxis) / ((timestamp-oldtimestamp)/1000);
-                double slope2 = (oldyAxis-oldoldyAxis) / ((oldtimestamp-oldoldtimestamp)/1000);
+                double slope = (yaxis-oldyAxis) / ((timestamp-oldtimestamp));
+                double slope2 = (oldyAxis-oldoldyAxis) / ((oldtimestamp-oldoldtimestamp));
                 Log.d("yaxis", String.valueOf(yaxis-oldyAxis));
-                Log.d("time", String.valueOf(timestamp-oldtimestamp));
-                Log.d("slope", String.valueOf((yaxis-oldyAxis) / ((timestamp-oldtimestamp)/1000)));
-                Log.d("slope2", String.valueOf((oldyAxis-oldoldyAxis) / ((oldtimestamp-oldoldtimestamp)/1000)));
+                Log.d("time", String.valueOf((timestamp-oldtimestamp)));
+                Log.d("slope", String.valueOf(slope));
+                Log.d("slope2", String.valueOf(slope2));
                 if (slope>valueChange && slope2 < valueChange2  /*abs(yaxis-oldyAxis)>valueChange && abs(oldyAxis-oldoldyAxis)>valueChange*/){
                     System.out.println(" ");
                     System.out.println("pothole detected");

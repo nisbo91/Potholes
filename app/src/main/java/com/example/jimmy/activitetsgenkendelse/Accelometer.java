@@ -21,7 +21,7 @@ public class Accelometer implements SensorEventListener {
     public void AccelometerInit(Context context){
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mLinearAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
-        mSensorManager.registerListener(this, mLinearAccelerometer, SensorManager.SENSOR_DELAY_FASTEST);
+        //mSensorManager.registerListener(this, mLinearAccelerometer, 100000);
         lastDataAccelometer = new String();
         dataAccelometer = new ArrayList<String>();
     }
